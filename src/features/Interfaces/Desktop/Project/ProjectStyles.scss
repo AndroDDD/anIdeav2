@@ -1,0 +1,436 @@
+// Project Page Display Support
+.projectPageDisplaySupportClass {
+  background-color: rgba(231, 1, 200, 1);
+  background-image: url("https://www.apklat.com/wp-content/uploads/2019/01/Street-Skate-Graffiti-Keyboard-Theme-Download-Latest-Version-APK.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+// React Player styles
+.reactPlayerViewClass {
+  transform: translateX(-300%);
+  z-index: -5;
+}
+// Gallery View Styles
+.galleryView {
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.98);
+  overflow: auto;
+  z-index: -5;
+}
+
+.galleryImage {
+  height: 100%;
+}
+
+// Journal Excerpt View Styles
+.journalExcerptView {
+  display: flex;
+  flex-direction: column;
+  border-left: 3px solid rgba(112, 128, 144, 0.75);
+  z-index: -5;
+}
+
+.journalExcerptTitleSupport {
+  width: 100%;
+  height: 10%;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    85%,
+    rgba(0, 0, 0, 0.5)
+  );
+}
+
+.journalExcerptContentSupport {
+  width: 100%;
+  height: 90%;
+  background-color: rgba(0, 0, 0, 1);
+  border: 1px solid black;
+  border-top: 1px solid rgba(19, 95, 170, 0.5);
+  overflow: auto;
+}
+
+// Project Media Navigation Styles
+// Project Media Journal Button Styles
+.projectMediaNavigationJournalButton {
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.projectMediaNavigationJournalButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.projectMediaNavigationJournalImage {
+}
+
+.projectMediaNavigationJournalIndexNavigationView {
+  display: flex;
+  flex-direction: column;
+  width: 20px;
+  height: 50px;
+  background-color: cyan;
+}
+
+.journalExcerptIndexInput {
+  padding: 0px;
+  border-top: 1px solid rgba(231, 1, 200, 1);
+  border-bottom: 1px solid rgba(231, 1, 200, 1);
+  height: 12px;
+  text-align: center;
+  cursor: text;
+}
+
+.journalExcerptIndexInput:focus {
+  outline: none;
+}
+
+.nextJournalExcerptNavigationButton {
+  width: 100%;
+  height: 18px;
+  padding: 2px;
+  border: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.nextJournalExcerptNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.nextJournalExcerptNavigationButtonImage {
+}
+
+.previousJournalExcerptNavigationButton {
+  width: 100%;
+  height: 18px;
+  padding: 2px;
+  border: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.previousJournalExcerptNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.previousJournalExcerptNavigationButtonImage {
+  transform: scaleX(-1);
+}
+
+// Project Media Motion Picture Button Styles
+
+.projectMediaNavigationMotionPictureButton {
+  width: 50px;
+  height: 50px;
+  padding: 5px;
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.projectMediaNavigationMotionPictureButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.projectMediaNavigationMotionPictureImage {
+}
+
+.projectMediaNavigationMotionPictureIndexNavigationView {
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 20px;
+  height: 50px;
+  background-color: cyan;
+}
+
+.motionPictureIndexInput {
+  padding: 0px;
+  border-top: 1px solid rgba(231, 1, 200, 1);
+  border-bottom: 1px solid rgba(231, 1, 200, 1);
+  height: 12px;
+  text-align: center;
+  cursor: text;
+}
+
+.motionPictureIndexInput:focus {
+  outline: none;
+}
+
+.nextMotionPictureNavigationButton {
+  width: 100%;
+  height: 18px;
+  padding: 2px;
+  border: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.nextMotionPictureNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.nextMotionPictureNavigationButtonImage {
+}
+
+.previousMotionPictureNavigationButton {
+  width: 100%;
+  height: 18px;
+  padding: 2px;
+  border: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.previousMotionPictureNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.previousMotionPictureNavigationButtonImage {
+  transform: scaleX(-1);
+}
+
+// Project Media Gallery Button Styles
+.projectMediaNavigationGalleryButton {
+  width: 50px;
+  height: 50px;
+  padding: 5px;
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.projectMediaNavigationGalleryButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.projectMediaNavigationGalleryImage {
+}
+
+.projectMediaNavigationGalleryIndexNavigationView {
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 20px;
+  height: 50px;
+  background-color: cyan;
+}
+
+.galleryIndexInput {
+  padding: 0px;
+  border-top: 1px solid rgba(231, 1, 200, 1);
+  border-bottom: 1px solid rgba(231, 1, 200, 1);
+  height: 12px;
+  text-align: center;
+  cursor: text;
+}
+
+.galleryIndexInput:focus {
+  outline: none;
+}
+
+.nextGalleryNavigationButton {
+  width: 100%;
+  height: 18px;
+  padding: 2px;
+  border: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.nextGalleryNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.nextGalleryNavigationButtonImage {
+}
+
+.previousGalleryNavigationButton {
+  width: 100%;
+  height: 18px;
+  padding: 2px;
+  border: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.previousGalleryNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.previousGalleryNavigationButtonImage {
+  transform: scaleX(-1);
+}
+// Project Selection Navigation Styles
+// Project Selection Input Styles
+.projectSelectionInput {
+  padding: 2px;
+  padding-top: 4px;
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  text-align: center;
+  font-size: 40px;
+  cursor: text;
+}
+// Next Project Button Styles
+.nextProjectNavigationButton {
+  width: 100%;
+  height: 67px;
+  padding: 10px;
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+  cursor: pointer;
+}
+
+.nextProjectNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.nextProjectNavigationButtonImage {
+}
+
+// Previous Project Button Styles
+.previousProjectNavigationButton {
+  position: relative;
+  width: 100%;
+  height: 67px;
+  padding: 10px;
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    90%,
+    rgba(231, 1, 200, 1)
+  );
+
+  cursor: pointer;
+}
+
+.previousProjectNavigationButton:hover {
+  border: 1px solid rgba(138, 54, 127, 0.75);
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 1),
+    70%,
+    rgba(231, 1, 200, 1)
+  );
+}
+
+.previousProjectNavigationButtonImage {
+  transform: scaleX(-1);
+}
