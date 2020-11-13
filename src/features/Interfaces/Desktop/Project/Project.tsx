@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import ReactPlayer from "react-player";
 import { Swipeable } from "react-swipeable";
-import { TimelineLite, Power2 } from "gsap";
+import { gsap, Power2 } from "gsap";
 
 import $ from "jquery";
 
@@ -959,7 +959,7 @@ const Project: React.FC = () => {
 
   // Handle GSAP manipulations
   // Declare gsap timeline
-  const tl = new TimelineLite();
+  const tl = gsap.timeline();
   // Handle initial project view entrance
   React.useEffect(() => {
     if (initialElementsEntrance === false && initialProjectViewPrepared) {
