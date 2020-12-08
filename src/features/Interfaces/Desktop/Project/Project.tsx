@@ -347,7 +347,7 @@ const Project: React.FC = () => {
     let initiateProjectDataFetch = async () => {
       let updatedProjectData = await projectDataFetch(undefined);
       setProjectData(() => {
-        return updatedProjectData.projectData;
+        return updatedProjectData.projectData.configured;
       });
     };
     initiateProjectDataFetch();
@@ -680,7 +680,7 @@ const Project: React.FC = () => {
               console.log({ navigationCurrentProjectQuery: projectData });
               let nextProjectIndex = projectData.excerptIndex + 1;
               let nextProjectData = await projectDataFetch(nextProjectIndex);
-              setProjectData(nextProjectData.projectData);
+              setProjectData(nextProjectData.projectData.configured);
               setJournalExcerptIndex(0);
               setCurrentMotionPicture(0);
               setGalleryIndex(0);
@@ -719,7 +719,7 @@ const Project: React.FC = () => {
                   let retrievedProjectData = await projectDataFetch(
                     projectSelectionIndexInput - 1
                   );
-                  setProjectData(retrievedProjectData.projectData);
+                  setProjectData(retrievedProjectData.projectData.configured);
                   setJournalExcerptIndex(0);
                   setCurrentMotionPicture(0);
                   setGalleryIndex(0);
@@ -737,7 +737,7 @@ const Project: React.FC = () => {
               let previousProjectData = await projectDataFetch(
                 previousProjectIndex
               );
-              setProjectData(previousProjectData.projectData);
+              setProjectData(previousProjectData.projectData.configured);
               setJournalExcerptIndex(0);
               setCurrentMotionPicture(0);
               setGalleryIndex(0);

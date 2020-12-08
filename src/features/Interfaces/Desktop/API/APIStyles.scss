@@ -1,0 +1,2139 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap");
+
+.mainAPIDisplaySupportClass {
+  box-sizing: border-box;
+  display: flex;
+  background-color: plum;
+  background-image: url("https://bigmemes.funnyjunk.com/large/pictures/7f/43/7f43d2_5365885.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
+}
+
+// Styles for api front page
+.apiFrontPage {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  border-bottom: 0px;
+  background-color: rgba(0, 0, 0, 0.699);
+}
+
+.createNewIdeaButton {
+  width: auto;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid green;
+  border-radius: 10px;
+  background-color: gainsboro;
+  color: green;
+  text-align: center;
+  text-shadow: 0px 0px 3px cyan;
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.createNewIdeaButton:hover {
+  background-color: maroon;
+  border-color: rgb(170, 31, 170);
+  border-radius: 15px;
+  color: rgb(170, 31, 170);
+  text-shadow: 0px 1px 3px burlywood;
+}
+
+.browseIdeasForEditButton {
+  width: auto;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid blue;
+  border-radius: 10px;
+  background-color: black;
+  color: blue;
+  text-align: center;
+  text-shadow: 0px 0px 3px brown;
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.browseIdeasForEditButton:hover {
+  background-color: coral;
+  border-color: cyan;
+  border-radius: 15px;
+  color: cyan;
+  text-shadow: 0px 1px 2px blue;
+}
+
+.toMainProjectsPageButton {
+  width: auto;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid gold;
+  border-radius: 10px;
+  background-color: darkslategrey;
+  color: gold;
+  text-align: center;
+  text-shadow: 0px 0px 3px limegreen;
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.toMainProjectsPageButton:hover {
+  background-color: brown;
+  border-color: rgb(24, 194, 24);
+  border-radius: 15px;
+  color: rgb(24, 194, 24);
+  text-shadow: 0px 1px 2px green;
+}
+
+// Styles for form preview data
+.outterMediaPreviewDisplay {
+  display: flex;
+  box-sizing: border-box;
+}
+
+.innerMediaPreviewDisplay {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid cyan;
+  border-bottom: 0px;
+  background-color: rgba(220, 220, 220, 0.5);
+}
+
+.previewDisplayImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.finalInnerMediaPreviewDisplay {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.finalMediaPreviewsConsolidated {
+  box-sizing: border-box;
+  width: 100%;
+  height: 27%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 5px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.finalIdeaTitle {
+  box-sizing: border-box;
+  width: 100%;
+  height: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  border: 1px solid rgb(0, 110, 255);
+  border-top: 0px;
+  color: gainsboro;
+  background-color: black;
+  text-shadow: 0px -1px 3px rgb(0, 132, 255);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 5px;
+}
+
+.finalVideoPreview {
+  box-sizing: border-box;
+  width: 29%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  background-color: black;
+  border: 1px solid green;
+  overflow: hidden;
+}
+
+.finalVideoExtendedDataPreview {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background-color: gainsboro;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.finalVideoName {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 2%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+  word-wrap: break-word;
+}
+
+.finalVideoType {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 2%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+  word-wrap: break-word;
+}
+
+.finalPhotoPreview {
+  box-sizing: border-box;
+  width: 29%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 1px solid cyan;
+  background-color: black;
+  overflow: hidden;
+}
+
+.finalPhotoExtendedData {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background-color: gainsboro;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.finalPhotoTitle {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 2%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+  word-wrap: break-word;
+}
+
+.finalPhotoReferences {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 2%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+  word-wrap: break-word;
+}
+
+.finalPassagePreview {
+  box-sizing: border-box;
+  width: 29%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 1px solid cyan;
+}
+
+.finalPassageContentPreview {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 3px;
+  border: 1px solid yellow;
+  background-color: black;
+  color: gainsboro;
+  font-weight: 700;
+  letter-spacing: 2px;
+  word-wrap: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.finalPassageExtendedDataPreview {
+  box-sizing: border-box;
+  width: 50%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background-color: gainsboro;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.finalPassageTitlePreview {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 2%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+}
+
+.finalPassageWhatIsItPreview {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 2%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+}
+
+.finalPassageReferencesPreview {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2%;
+  padding-right: 3%;
+  width: 100%;
+  color: black;
+  font-size: 15px;
+  letter-spacing: 3px;
+  word-wrap: break-word;
+}
+
+// Options bar for final project preview
+.finalizeOptions {
+  box-sizing: border-box;
+  width: 100%;
+  height: 5%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 2px;
+  overflow: hidden;
+}
+
+.returnToEditButton {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45%;
+  height: 95%;
+  justify-content: center;
+  border: 1px solid teal;
+  border-radius: 5px;
+  background-color: rgb(0, 0, 27);
+  color: rgb(0, 68, 255);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.returnToEditButton:hover {
+  align-items: flex-start;
+  border-radius: 10px;
+  border-color: black;
+  background-color: gainsboro;
+  color: black;
+  font-size: 22px;
+  text-shadow: 0px 2px 5px cyan;
+  font-weight: 800;
+  letter-spacing: 7px;
+}
+
+.finalizeDataButton {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45%;
+  height: 95%;
+  justify-content: center;
+  border: 1px solid gainsboro;
+  border-radius: 5px;
+  background-color: black;
+  color: crimson;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.finalizeDataButton:hover {
+  padding-top: 6px;
+  align-items: flex-start;
+  border-radius: 10px;
+  background-color: crimson;
+  color: lime;
+  font-size: 15px;
+  text-shadow: 0px 2px 5px blue;
+  font-weight: 700;
+  letter-spacing: 5px;
+}
+
+// For editing existing project bar
+.retrievedProjectOptions {
+  box-sizing: border-box;
+  width: 100%;
+  height: 5%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.backToApiFrontPageButton {
+  box-sizing: border-box;
+  width: 10%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 3px;
+  margin: 3px;
+  border: 1px solid cyan;
+  border-radius: 10px;
+  color: cyan;
+  background-color: darkblue;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.backToApiFrontPageButton:hover {
+  border: 1px solid darkblue;
+  border-radius: 5px;
+  color: darkblue;
+  background-color: cyan;
+}
+
+.projectsNavigationBar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 40%;
+  height: 100%;
+}
+
+.projectsNavigationPrevious {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  border: 1px solid black;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  color: black;
+  background-color: chocolate;
+  text-align: center;
+  text-shadow: 0px 0px 2px darkslategrey;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.projectsNavigationPrevious:hover {
+  border-color: chocolate;
+  color: chocolate;
+  background-color: black;
+}
+
+.projectsNavigationNext {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  border: 1px solid black;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: black;
+  background-color: chartreuse;
+  text-align: center;
+  text-shadow: 0px 0px 2px darkslategrey;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.projectsNavigationNext:hover {
+  border-color: chartreuse;
+  color: chartreuse;
+  background-color: black;
+}
+
+.editFetchedProjectButton {
+  box-sizing: border-box;
+  width: 19%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+  margin-top: 3px;
+  border: 1px solid deeppink;
+  border-radius: 10px;
+  background-color: dimgrey;
+  color: deeppink;
+  text-align: center;
+  text-shadow: 0px 0px 2px gainsboro;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  cursor: pointer;
+}
+
+.editFetchedProjectButton:hover {
+  border-color: darkslategrey;
+  color: darkslategrey;
+  background-color: magenta;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 5px;
+}
+
+.destroyProjectButton {
+  box-sizing: border-box;
+  width: 19%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+  margin-top: 3px;
+  border: 1px solid maroon;
+  border-radius: 10px;
+  background-color: black;
+  color: maroon;
+  text-align: center;
+  text-shadow: 0px 0px 2px gainsboro;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  cursor: pointer;
+}
+
+.destroyProjectButton:hover {
+  border-color: red;
+  color: red;
+  background-color: black;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 5px;
+}
+
+// Confirmation page styles
+.dataUploadConfirmationPage {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 0px;
+  background-color: rgba(0, 0, 0, 1);
+}
+
+.dataUploadConfirmationTitle {
+  box-sizing: border-box;
+  width: 50%;
+  display: flex;
+  margin-bottom: 15px;
+  padding-bottom: 3px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid gainsboro;
+  color: gainsboro;
+  text-align: center;
+  text-shadow: 0px 0px 3px blue;
+  font-size: 35px;
+  font-weight: 400;
+  letter-spacing: 3px;
+}
+
+.dataUploadConfirmationOptions {
+  box-sizing: border-box;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.dataUploadConfirmationOptionYes {
+  box-sizing: border-box;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 3px;
+  margin-right: 3px;
+  border: 1px solid green;
+  color: green;
+  text-shadow: 0px 0px 3px navy;
+  font-size: 27px;
+  font-weight: 300;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.dataUploadConfirmationOptionYes:hover {
+  border: 1px solid lime;
+  color: lime;
+  font-weight: 600;
+  letter-spacing: 5px;
+}
+
+.dataUploadConfirmationOptionNo {
+  box-sizing: border-box;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 3px;
+  margin-right: 3px;
+  border: 1px solid red;
+  color: red;
+  text-shadow: 0px 0px 3px navy;
+  font-size: 27px;
+  font-weight: 300;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.dataUploadConfirmationOptionNo:hover {
+  border: 1px solid crimson;
+  color: crimson;
+  font-weight: 600;
+  letter-spacing: 5px;
+}
+
+// Styles form form
+.formEmbedder {
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.innerFormMainDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  border: 2px solid blue;
+  border-bottom-right-radius: 5px;
+  direction: rtl;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.innerFormSectionContainer {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.innerFormSectionContainer::-webkit-scrollbar {
+  background: linear-gradient(to bottom, black, blue, black);
+}
+
+.innerFormSectionContainer::-webkit-scrollbar-track {
+  border-top: 1px solid cyan;
+  border-bottom: 1px solid cyan;
+  border-right: 1px solid cyan;
+}
+
+.innerFormSectionContainer::-webkit-scrollbar-thumb {
+  background: rgba(165, 42, 42, 0.75);
+  border-top: 1px solid cyan;
+  border-bottom: 1px solid cyan;
+  border-right: 1px solid cyan;
+}
+
+.innerFormSectionContainer::-webkit-scrollbar-button {
+  height: 5px;
+  background-color: rgba(255, 0, 0, 0.5);
+  border-right: 1px solid rgba(0, 255, 255, 1);
+}
+
+.innerFormSectionInputs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+}
+
+.innerFormAddInputButton {
+  position: sticky;
+  top: 0%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  padding: 0%;
+  margin: 0%;
+  border: 0px;
+  border-bottom: 1px solid blue;
+  background-color: gainsboro;
+  color: rgb(0, 0, 0);
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.innerFormAddInputButton:hover {
+  background-color: rgb(3, 3, 87);
+  color: gainsboro;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+// Styles for form data inputs header
+.formDataInputsHeader {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+}
+
+.innerFormSubmitButton {
+  width: 45%;
+  height: 100%;
+  padding: 0%;
+  margin: 0%;
+  border: 0px;
+  background-color: gainsboro;
+  color: black;
+  font-family: monospace;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.innerFormSubmitButton:hover {
+  border-left: 1px solid limegreen;
+  border-right: 1px solid limegreen;
+  background-color: black;
+  color: lime;
+  text-shadow: 0px 0px 2px darkslategrey;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.extraHeaderOptionFreshFormBackToApiFrontPageButton {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 2px;
+  background-color: black;
+  color: red;
+  border: 1px solid crimson;
+  text-align: center;
+  text-shadow: 0px 0px 2px darkcyan;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.extraHeaderOptionFreshFormBackToApiFrontPageButton:hover {
+  border-color: black;
+  color: black;
+  background-color: red;
+  text-shadow: 0px 0px 2px maroon;
+  font-size: 14px;
+  letter-spacing: 3px;
+}
+
+.extraHeaderOptionFetchedProjectDataBackToFullPreviewPageButton {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 2px;
+  background-color: black;
+  color: rgb(204, 2, 204);
+  border: 1px solid rebeccapurple;
+  text-align: center;
+  text-shadow: 0px 0px 2px blue;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.extraHeaderOptionFetchedProjectDataBackToFullPreviewPageButton:hover {
+  border-color: crimson;
+  color: red;
+  background-color: black;
+  text-shadow: 0px 0px 2px rebeccapurple;
+  font-size: 14px;
+  letter-spacing: 3px;
+}
+
+.mediaSelectionNavDisplay {
+  display: flex;
+  width: 100%;
+  height: 25px;
+  justify-content: space-evenly;
+  align-items: center;
+  border-top: 2px solid blue;
+  border-bottom: 2px solid blue;
+  direction: ltr;
+}
+
+.mediaSelectionNavButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  width: 24%;
+  height: 100%;
+  background-color: lightpink;
+  text-align: center;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mediaSelectionNavButton:hover {
+  color: whitesmoke;
+  background-color: lightseagreen;
+  font-weight: 700;
+}
+
+.mediaSelectionNavButtonDisabled {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  width: 24%;
+  height: 100%;
+  background-color: rgba(255, 182, 193, 0.5);
+  color: rgba(112, 128, 144, 0.5);
+  text-align: center;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: default;
+}
+
+.elementAdjustmentsForReferences {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
+
+// etc styles for form view
+.media-selected-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  width: 90%;
+  height: 21px;
+  background-color: black;
+  color: limegreen;
+  text-align: center;
+  font-family: "Ubuntu", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: default;
+}
+
+// Main idea title
+.anIdeaTitle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  text-align: center;
+  font-family: monospace;
+  font-size: 17px;
+  font-weight: 700;
+  outline: none;
+  direction: ltr;
+}
+
+// Video inputs styles
+// Video main display
+.video-outter-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  direction: ltr;
+  background-color: black;
+  border-top: 1px solid blue;
+  overflow: hidden;
+}
+
+.video-inner-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.video-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  width: 90%;
+  height: 21px;
+  background-color: black;
+  color: gainsboro;
+  text-align: center;
+  font-family: "Ubuntu", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.video-label:hover {
+  color: cyan;
+}
+
+.video-inputs-remove-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10%;
+  height: 11px;
+  background-color: crimson;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 13px;
+  cursor: pointer;
+}
+
+.video-inputs-remove-button:hover {
+  background-color: red;
+}
+
+// video name input
+.video-name-text-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+.video-name-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.video-name-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.video-name-text-input:focus {
+  outline: none;
+}
+
+// Video url input
+.video-url-text-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 25px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  overflow: hidden;
+}
+
+.video-url-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.video-url-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  text-align: left;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.video-url-text-input:focus {
+  outline: none;
+}
+
+// video type input
+.video-type-list-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 25px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  overflow: hidden;
+}
+
+.video-type-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.video-type-list {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+}
+
+.video-type-list-input-container {
+  display: flex;
+  width: 100%;
+}
+
+.video-type-list-input-radio {
+  cursor: pointer;
+}
+
+.video-type-list-input-label {
+  color: gainsboro;
+  font-family: monospace;
+}
+
+// Mural photo inputs styles
+// Mural photos main display
+.muralPhoto-outter-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  direction: ltr;
+  background-color: black;
+  border-top: 1px solid blue;
+  overflow: hidden;
+}
+
+.muralPhoto-inner-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.muralPhoto-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  width: 90%;
+  height: 21px;
+  background-color: black;
+  color: gainsboro;
+  text-align: center;
+  font-family: "Ubuntu", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.muralPhoto-label:hover {
+  color: cyan;
+}
+
+.muralPhoto-inputs-remove-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10%;
+  height: 11px;
+  background-color: crimson;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 13px;
+  cursor: pointer;
+}
+
+.muralPhoto-inputs-remove-button:hover {
+  background-color: red;
+}
+
+// Mural photo file selection
+.muralPhoto-photo-file-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 100%;
+  height: 25px;
+  direction: ltr;
+  overflow: hidden;
+}
+
+.muralPhoto-photo-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.muralPhoto-photo-file-input {
+  display: flex;
+  direction: rtl;
+}
+
+// Mural photo which set
+.muralPhoto-whichSet-text-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+.muralPhoto-whichSet-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.muralPhoto-whichSet-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: center;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.muralPhoto-whichSet-text-input:focus {
+  outline: none;
+}
+
+// Mural photo name
+.muralPhoto-name-text-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 0px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+.muralPhoto-name-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.muralPhoto-name-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.muralPhoto-name-text-input:focus {
+  outline: none;
+}
+
+// Mural photo orientation
+.muralPhoto-orientation-list-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  overflow: hidden;
+}
+
+.muralPhoto-orientation-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.muralPhoto-orientation-list {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  height: auto;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+}
+
+.muralPhoto-orientation-list-input-container {
+  display: flex;
+  width: 100%;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.muralPhoto-orientation-list-input-radio {
+  cursor: pointer;
+}
+
+.muralPhoto-orientation-list-input-label {
+  display: flex;
+  padding-left: 3px;
+  color: gainsboro;
+  font-family: monospace;
+}
+
+// mural photo references
+.muralPhoto-references-outter-inputs-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  border: 1px solid cyan;
+  direction: ltr;
+}
+
+.muralPhoto-references-inner-inputs-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 100%;
+  height: auto;
+  direction: ltr;
+}
+
+.muralPhoto-references-label {
+  height: 20px;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: silver;
+  text-align: left;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.muralPhoto-references-inputs-remove-button {
+  display: none;
+}
+
+.muralPhoto-reference-text-input-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  background-color: black;
+  overflow: hidden;
+}
+
+.muralPhoto-reference-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  width: 40%;
+  color: gainsboro;
+  text-align: center;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.muralPhoto-reference-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 55%;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+  outline: none;
+}
+
+.muralPhoto-reference-text-input-remove-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 5%;
+  height: 20px;
+  background-color: indigo;
+  border: 1px solid rgba(76, 0, 130, 0.75);
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.muralPhoto-reference-text-input-remove-button:hover {
+  background-color: rebeccapurple;
+  border: 1px solid crimson;
+}
+
+.muralPhoto-add-reference-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 5%;
+  height: 18px;
+  background-color: slategrey;
+  color: black;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 30px;
+  font-weight: 300;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+.muralPhoto-add-reference-button:hover {
+  border: 1px solid cyan;
+}
+
+// Gallery photo inputs styles
+// Gallery photo main display
+.galleryPhoto-outter-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  direction: ltr;
+  background-color: black;
+  border-top: 1px solid blue;
+  overflow: hidden;
+}
+
+.galleryPhoto-inner-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.galleryPhoto-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  width: 90%;
+  height: 21px;
+  background-color: black;
+  color: gainsboro;
+  text-align: center;
+  font-family: "Ubuntu", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.galleryPhoto-label:hover {
+  color: cyan;
+}
+
+.galleryPhoto-inputs-remove-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10%;
+  height: 11px;
+  background-color: crimson;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 13px;
+  cursor: pointer;
+}
+
+.galleryPhoto-inputs-remove-button:hover {
+  background-color: red;
+}
+
+// Gallery photo file selection
+.galleryPhoto-photo-file-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 100%;
+  height: 25px;
+  direction: ltr;
+  overflow: hidden;
+}
+
+.galleryPhoto-photo-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.galleryPhoto-photo-file-input {
+  display: flex;
+  direction: rtl;
+}
+
+// Gallery photo title
+.galleryPhoto-title-text-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 0px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+.galleryPhoto-title-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.galleryPhoto-title-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.galleryPhoto-title-text-input:focus {
+  outline: none;
+}
+
+// Gallery photo references
+.galleryPhoto-references-outter-inputs-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  border: 1px solid cyan;
+  direction: ltr;
+}
+
+.galleryPhoto-references-inner-inputs-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 100%;
+  height: auto;
+  direction: ltr;
+}
+
+.galleryPhoto-references-label {
+  height: 20px;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: silver;
+  text-align: left;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.galleryPhoto-references-inputs-remove-button {
+  display: none;
+}
+
+.galleryPhoto-reference-text-input-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  background-color: black;
+  overflow: hidden;
+}
+
+.galleryPhoto-reference-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  width: 40%;
+  color: gainsboro;
+  text-align: center;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.galleryPhoto-reference-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 55%;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+  outline: none;
+}
+
+.galleryPhoto-reference-text-input-remove-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 5%;
+  height: 20px;
+  background-color: indigo;
+  border: 1px solid rgba(76, 0, 130, 0.75);
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.galleryPhoto-reference-text-input-remove-button:hover {
+  background-color: rebeccapurple;
+  border: 1px solid crimson;
+}
+
+.galleryPhoto-add-reference-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 5%;
+  height: 18px;
+  background-color: slategrey;
+  color: black;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 30px;
+  font-weight: 300;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+.galleryPhoto-add-reference-button:hover {
+  border: 1px solid cyan;
+}
+
+// Passage inputs styles
+.passage-outter-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  direction: ltr;
+  background-color: black;
+  border-top: 1px solid blue;
+  overflow: hidden;
+}
+
+.passage-inner-inputs-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.passage-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  width: 90%;
+  height: 21px;
+  background-color: black;
+  color: gainsboro;
+  text-align: center;
+  font-family: "Ubuntu", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+
+.passage-label:hover {
+  color: cyan;
+}
+
+.passage-inputs-remove-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10%;
+  height: 11px;
+  background-color: crimson;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 13px;
+  cursor: pointer;
+}
+
+.passage-inputs-remove-button:hover {
+  background-color: red;
+}
+
+// Passage title
+.passage-title-text-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 0px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+.passage-title-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.passage-title-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.passage-title-text-input:focus {
+  outline: none;
+}
+
+// Passage what is it
+.passage-whatIsIt-text-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 0px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+.passage-whatIsIt-label {
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.passage-whatIsIt-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+}
+
+.passage-whatIsIt-text-input:focus {
+  outline: none;
+}
+
+// Passage content
+.passage-content-label {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 5%;
+  align-items: center;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  background-color: black;
+  color: gainsboro;
+  font-family: monospace;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: default;
+}
+
+.passage-content-text-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  background-color: rgba(112, 128, 144, 0.95);
+  border: 1px solid cyan;
+  color: gainsboro;
+  font-family: monospace;
+  caret-color: cyan;
+  text-overflow: ellipsis;
+}
+
+// Passage references
+.passage-references-outter-inputs-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  border: 1px solid cyan;
+  direction: ltr;
+}
+
+.passage-references-inner-inputs-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 100%;
+  height: auto;
+  direction: ltr;
+}
+
+.passage-references-label {
+  height: 20px;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: silver;
+  text-align: left;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.passage-references-inputs-remove-button {
+  display: none;
+}
+
+.passage-reference-text-input-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  background-color: black;
+  overflow: hidden;
+}
+
+.passage-reference-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  width: 40%;
+  color: gainsboro;
+  text-align: center;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.passage-reference-text-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 55%;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  background-color: rgba(112, 128, 144, 0.75);
+  border: 0px;
+  border-left: 1px solid cyan;
+  border-top: 1px solid cyan;
+  border-bottom: 3px solid cyan;
+  color: gainsboro;
+  text-align: left;
+  font-family: monospace;
+  caret-color: cyan;
+  outline: none;
+}
+
+.passage-reference-text-input-remove-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 5%;
+  height: 20px;
+  background-color: indigo;
+  border: 1px solid rgba(76, 0, 130, 0.75);
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 50px;
+  font-weight: 300;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.passage-reference-text-input-remove-button:hover {
+  background-color: rebeccapurple;
+  border: 1px solid crimson;
+}
+
+.passage-add-reference-button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  width: 5%;
+  height: 18px;
+  background-color: slategrey;
+  color: black;
+  text-shadow: -2px -1px 2px gainsboro;
+  font-size: 30px;
+  font-weight: 300;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+.passage-add-reference-button:hover {
+  border: 1px solid cyan;
+}

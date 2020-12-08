@@ -6,14 +6,15 @@ import history from "../history/history";
 import { ConnectedRouter } from "connected-react-router";
 
 import Project from "../features/Interfaces/Desktop/Project/Project";
+import API from "../features/Interfaces/Desktop/API/API";
 
 export const store = configureStore();
 
 export const isMobile = checkIfMobileBrowser();
 
-export const localUrl = isMobile ? `http://192.168.1.144:3000/` : `http://localhost:3000/`;
+export const localUrl = ``;
 
-export const dataBaseUrl =isMobile ? `http://192.168.1.144:5000/anIdea/scrap-book/music/` : `http://localhost:5000/anIdea/scrap-book/music/`;
+export const dataBaseUrl = ``;
 
 function checkIfMobileBrowser() {
   let check = false;
@@ -71,6 +72,7 @@ const RoutesComposed = () => {
               path="/project"
               component={isMobile ? Project : Project}
             />
+            <Route exact path="/api" component={isMobile ? API : API} />
             <ProtectedRoute
               path="/protected"
               component={isMobile ? Project : Project}

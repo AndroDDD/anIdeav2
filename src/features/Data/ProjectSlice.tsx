@@ -19,7 +19,7 @@ const ProjectSlice = createSlice({
           bottomRight: ``,
         },
       ],
-      galleryPhotos: [{ title: ``, filename: `` }],
+      galleryPhotos: [{ id: ``, title: ``, filename: `` }],
       journal: [{ title: ``, content: `` }],
     },
   },
@@ -53,7 +53,11 @@ const ProjectSlice = createSlice({
               topRight: string;
               bottomRight: string;
             }>;
-            galleryPhotos: Array<{ title: string; filename: string }>;
+            galleryPhotos: Array<{
+              id: string;
+              title: string;
+              filename: string;
+            }>;
             journal: Array<{ title: string; content: string }>;
           };
         }>
@@ -75,7 +79,7 @@ const ProjectSlice = createSlice({
             topRight: string;
             bottomRight: string;
           }>;
-          galleryPhotos: Array<{ title: string; filename: string }>;
+          galleryPhotos: Array<{ id: string; title: string; filename: string }>;
           journal: Array<{ title: string; content: string }>;
         };
       }) => ({
@@ -89,8 +93,8 @@ const ProjectSlice = createSlice({
 
 export const { setProjectsId, setProjectData } = ProjectSlice.actions;
 
-export const projectDataFetch = async (projectIndex?: number) => {
-  let fetchedProjectsId = await fetch(dataBaseUrl, {
+export const retrieveAllProjectsIds = async () => {
+  let fetchingProjectsId = await fetch(dataBaseUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -114,24 +118,42 @@ export const projectDataFetch = async (projectIndex?: number) => {
         return retrievedIds;
       }
     );
+  return fetchingProjectsId;
+};
 
+export const projectDataFetch = async (projectIndex?: number | string) => {
+  let fetchedProjectsId =
+    typeof projectIndex === "number" || typeof projectIndex === "undefined"
+      ? await retrieveAllProjectsIds()
+      : [``];
   let clarifiedProjectIndex = () => {
-    if (projectIndex) {
-      if (projectIndex <= fetchedProjectsId.length - 1) {
-        if (projectIndex < 0) {
-          return 0;
+    if (
+      typeof projectIndex === "number" ||
+      typeof projectIndex === "undefined"
+    ) {
+      if (projectIndex) {
+        if (projectIndex <= fetchedProjectsId.length - 1) {
+          if (projectIndex < 0) {
+            return 0;
+          }
+          return projectIndex;
+        } else {
+          return fetchedProjectsId.length - 1;
         }
-        return projectIndex;
       } else {
-        return fetchedProjectsId.length - 1;
+        return 0;
       }
     } else {
-      return 0;
+      return -1;
     }
   };
 
   let fetchedProject = await fetch(
-    `${dataBaseUrl}${fetchedProjectsId[clarifiedProjectIndex()]}`,
+    `${dataBaseUrl}${
+      typeof projectIndex === "number" || typeof projectIndex === "undefined"
+        ? fetchedProjectsId[clarifiedProjectIndex()]
+        : projectIndex
+    }`,
     {
       method: "GET",
       headers: {
@@ -148,6 +170,7 @@ export const projectDataFetch = async (projectIndex?: number) => {
         dateAdded: string;
         ideaTitle: string;
         journal: Array<{
+          _id: string;
           title: string;
           whatIsIt: string;
           content: string;
@@ -155,6 +178,7 @@ export const projectDataFetch = async (projectIndex?: number) => {
           date: Date;
         }>;
         majorCatalogPhotos: Array<{
+          _id: string;
           photoTitle: string;
           photoFilename: string;
           photoReferences: Array<string>;
@@ -230,6 +254,7 @@ export const projectDataFetch = async (projectIndex?: number) => {
         });
         let projectGalleryPhotos = data.majorCatalogPhotos.map((majorcp) => {
           let configgedPhotoData = {
+            id: majorcp._id,
             title: majorcp.photoTitle,
             filename: `${dataBaseUrl}photos/${majorcp.photoFilename}`,
           };
@@ -255,7 +280,7 @@ export const projectDataFetch = async (projectIndex?: number) => {
           configgedProjectData: configgedProjectData,
         });
 
-        return configgedProjectData;
+        return { fullData: data, configured: configgedProjectData };
       }
     );
   return {
