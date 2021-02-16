@@ -13,6 +13,7 @@ import { gsap, Power2 } from "gsap";
 import $ from "jquery";
 
 import { projectDataFetch } from "../../../Data/ProjectSlice";
+import HeaderBar from "../HeaderBar/HeaderBarMax";
 
 import "./ProjectStyles.scss";
 
@@ -50,9 +51,17 @@ const Project: React.FC = () => {
     console.log({ detectedScreenHeightChange: screenHeight });
     let updatedHeightConfig = {
       ...styles,
-      mainDisplaySupportStyle: {
-        ...styles.mainDisplaySupportStyle,
-        height: `${screenHeight}px`,
+      [`underlayerSupport`]: {
+        ...styles[`underlayerSupport`],
+        [`height`]: `${screenHeight / 100}px`,
+      },
+      [`headerBarForProjectSupport`]: {
+        ...styles[`headerBarForProjectSupport`],
+        [`height`]: `${(screenHeight / 100) * 5}px`,
+      },
+      projectDisplaySupportStyle: {
+        ...styles.projectDisplaySupportStyle,
+        height: `${(screenHeight / 100) * 95}px`,
       },
       reactPlayerView: {
         ...styles.reactPlayerView,
@@ -72,9 +81,22 @@ const Project: React.FC = () => {
 
   // Declare stylesheet for manipulation
   const [styles, setStyles] = React.useState({
-    mainDisplay: styles2.mainDisplay,
-    mainDisplaySupportClass: `projectPageDisplaySupportClass`,
-    mainDisplaySupportStyle: { width: "100%", height: `${screenHeight}px` },
+    [`underlayer`]: `underlayer`,
+    [`underlayerSupport`]: {
+      [`width`]: `100%`,
+      [`height`]: `${screenHeight}px`,
+    },
+    [`headerBarForProject`]: `headerBarForProject`,
+    [`headerBarForProjectSupport`]: {
+      [`width:`]: `100%`,
+      [`height`]: `${(screenHeight / 100) * 5}px`,
+    },
+    projectDisplay: styles2.projectDisplay,
+    projectDisplaySupportClass: `projectPageDisplaySupportClass`,
+    projectDisplaySupportStyle: {
+      width: "100%",
+      height: `${(screenHeight / 100) * 95}px`,
+    },
     projectNavigationView: styles2.projectNavigationView,
     reactPlayerView: { width: `${screenWidth - 70}px`, height: "100%" },
     reactPlayerViewClass: `reactPlayerViewClass`,
@@ -186,6 +208,12 @@ const Project: React.FC = () => {
   const nextProjectNavigationButtonImageRef = React.useRef<any>();
   const previousProjectNavigationButtonRef = React.useRef<any>();
   const previousProjectNavigationButtonImageRef = React.useRef<any>();
+
+  // Declare variable holding authorization status
+  const [authorizationStatus, setAuthorizationStatus] = React.useState(() => ({
+    [`authorizedId`]: ``,
+    [`personalAccess`]: ``,
+  }));
 
   // Declare state for project data
   const [projectData, setProjectData] = React.useState({
@@ -767,7 +795,12 @@ const Project: React.FC = () => {
             width={"100%"}
             height={"100%"}
             controls
-            url={projectData.motionPictures[currentMotionPicture].url}
+            url={
+              projectData.motionPictures[currentMotionPicture] &&
+              projectData.motionPictures[currentMotionPicture][`url`]
+                ? projectData.motionPictures[currentMotionPicture].url
+                : ``
+            }
             config={{
               youtube: {
                 playerVars: { start: 0 },
@@ -822,7 +855,12 @@ const Project: React.FC = () => {
         >
           <img
             ref={galleryImageRef}
-            src={projectData.galleryPhotos[galleryIndex].filename}
+            src={
+              projectData.galleryPhotos[galleryIndex] &&
+              projectData.galleryPhotos[galleryIndex][`filename`]
+                ? projectData.galleryPhotos[galleryIndex].filename
+                : `https://th.bing.com/th/id/R2f98696be371565497ac6a53715b6aa0?rik=krsDdNbN6QeWbA&riu=http%3a%2f%2ftrackthemissingchild.gov.in%2ftrackchild%2fimages%2fstate_portlet%2fno_data_found.png&ehk=MbF34AkbC0iPwR1QVdFqmsZHeBamiEBIjvULEXKyhzM%3d&risl=&pid=ImgRaw`
+            }
             alt={`Gallery`}
             height={"100%"}
             width={"auto"}
@@ -894,7 +932,10 @@ const Project: React.FC = () => {
               ref={journalExcerptTitleRef}
               style={styles.journalExcerptTitle}
             >
-              {projectData.journal[journalExcerptIndex].title}
+              {projectData.journal[journalExcerptIndex] &&
+              projectData.journal[journalExcerptIndex][`title`]
+                ? projectData.journal[journalExcerptIndex].title
+                : `NO PASSAGE TITLE`}
             </Text>
           </div>
           <div
@@ -905,7 +946,10 @@ const Project: React.FC = () => {
               ref={journalExcerptContentRef}
               style={styles.journalExcerptContent}
             >
-              {projectData.journal[journalExcerptIndex].content}
+              {projectData.journal[journalExcerptIndex] &&
+              projectData.journal[journalExcerptIndex][`content`]
+                ? projectData.journal[journalExcerptIndex].content
+                : `NO PASSAGE CONTENT`}
             </Text>
           </div>
         </Swipeable>
@@ -982,24 +1026,37 @@ const Project: React.FC = () => {
     }
   }, [initialProjectViewPrepared]);
 
-  // Handle component return view
+  // Handle function component return view
   return (
-    <div
-      ref={mainDisplaySupportClassRef}
-      className={styles.mainDisplaySupportClass}
-      style={styles.mainDisplaySupportStyle}
-    >
-      <View ref={mainDisplayRef} style={styles.mainDisplay}>
-        {projectNavigationView}
-        {mediaView}
-      </View>
+    <div className={styles[`underlayer`]} style={styles[`underlayerSupport`]}>
+      <div
+        className={styles[`headerBarForProject`]}
+        style={styles[`headerBarForProjectSupport`]}
+      >
+        <HeaderBar
+          authorizationStatusOpts={{
+            authorizationStatus,
+            setAuthorizationStatus,
+          }}
+        />
+      </div>
+      <div
+        ref={mainDisplaySupportClassRef}
+        className={styles.projectDisplaySupportClass}
+        style={styles.projectDisplaySupportStyle}
+      >
+        <View ref={mainDisplayRef} style={styles.projectDisplay}>
+          {mediaView}
+          {projectNavigationView}
+        </View>
+      </div>
     </div>
   );
 };
 
 // Declare stylesheet for react-native components
 const styles2 = StyleSheet.create({
-  mainDisplay: {
+  projectDisplay: {
     flexDirection: "row",
     margin: "auto",
     width: "100%",

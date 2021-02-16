@@ -3,11 +3,19 @@
 .mainAPIDisplaySupportClass {
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   background-color: plum;
-  background-image: url("https://bigmemes.funnyjunk.com/large/pictures/7f/43/7f43d2_5365885.jpg");
-  background-repeat: no-repeat;
   background-size: cover;
   overflow: hidden;
+}
+
+// Styling for api header bar
+.headerBarForAPI {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  border-bottom: 1px solid magenta;
 }
 
 // Styles for api front page
@@ -123,8 +131,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid cyan;
-  border-bottom: 0px;
+  border: 2px solid cyan;
   background-color: rgba(220, 220, 220, 0.5);
 }
 
@@ -164,8 +171,7 @@
   justify-content: center;
   align-items: center;
   padding-bottom: 2px;
-  border: 1px solid rgb(0, 110, 255);
-  border-top: 0px;
+  border: 2px solid rgb(0, 110, 255);
   color: gainsboro;
   background-color: black;
   text-shadow: 0px -1px 3px rgb(0, 132, 255);
@@ -701,16 +707,30 @@
 }
 
 .innerFormMainDisplay {
+  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
   border: 2px solid blue;
   border-bottom-right-radius: 5px;
-  direction: rtl;
+  direction: ltr;
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.formOptionsContainer {
+  box-sizing: border-box;
+  width: 20%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-right: 2px solid blue;
+  overflow: hidden;
 }
 
 .innerFormSectionContainer {
@@ -719,7 +739,7 @@
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
-  height: auto;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -782,10 +802,14 @@
   font-weight: 800;
 }
 
+.formOptionsInitialInputs {
+  width: 100%;
+}
+
 // Styles for form data inputs header
 .formDataInputsHeader {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   height: 40px;
@@ -880,7 +904,7 @@
   justify-content: space-evenly;
   align-items: center;
   border-top: 2px solid blue;
-  border-bottom: 2px solid blue;
+  border-right: 2px solid blue;
   direction: ltr;
 }
 
@@ -921,7 +945,7 @@
   cursor: default;
 }
 
-.elementAdjustmentsForReferences {
+.elementAdjustmentsForSubInputs {
   display: flex;
   flex-direction: column;
   width: 100%;

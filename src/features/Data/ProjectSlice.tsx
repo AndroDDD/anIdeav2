@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { store, dataBaseUrl } from "../../routes/routerBlock";
+import { store, dataBaseUrl, userBaseUrl } from "../../routes/routerBlock";
 
 const ProjectSlice = createSlice({
   name: "projectData",
@@ -93,30 +93,55 @@ const ProjectSlice = createSlice({
 
 export const { setProjectsId, setProjectData } = ProjectSlice.actions;
 
-export const retrieveAllProjectsIds = async () => {
-  let fetchingProjectsId = await fetch(dataBaseUrl, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
+export const retrieveAllProjectsIds = async (authorizedAccess?: {
+  userId: string;
+  accessPower: string;
+}) => {
+  let fetchingProjectsId = await fetch(
+    authorizedAccess && !authorizedAccess[`accessPower`][`includes`](`full`)
+      ? `${userBaseUrl}authorization/${
+          authorizedAccess[`userId`]
+        }/webApp/AnIdea`
+      : `${dataBaseUrl}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
     .then((res) => {
       const json = res.json();
       return json;
     })
     .then(
-      (
-        data: Array<{
-          _id: string;
-        }>
-      ) => {
-        const retrievedIds = data.map((project) => {
-          return project._id;
-        });
-        store.dispatch(setProjectsId({ preppedIds: retrievedIds }));
-        console.log({ retrievedIds });
-        return retrievedIds;
-      }
+      authorizedAccess && !authorizedAccess[`accessPower`][`includes`](`full`)
+        ? (data: {
+            [`status`]: { [`authorizedDataAccess`]: Array<string> };
+          }) => {
+            console[`log`]({ data });
+            store[`dispatch`](
+              setProjectsId({
+                preppedIds: data[`status`][`authorizedDataAccess`],
+              })
+            );
+            console.log({
+              [`projectIdsForUser`]: data[`status`][`authorizedDataAccess`],
+            });
+            return data[`status`][`authorizedDataAccess`];
+          }
+        : (
+            data: Array<{
+              _id: string;
+            }>
+          ) => {
+            const retrievedIds = data.map((project) => {
+              return project._id;
+            });
+            store.dispatch(setProjectsId({ preppedIds: retrievedIds }));
+            console.log({ retrievedIds });
+            return retrievedIds;
+          }
     );
   return fetchingProjectsId;
 };

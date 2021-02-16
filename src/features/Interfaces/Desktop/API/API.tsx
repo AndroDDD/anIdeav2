@@ -1,19 +1,26 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { useFormik } from "formik";
+import { useAuth0 } from "@auth0/auth0-react";
 import * as yup from "yup";
 import ReactPlayer from "react-player";
 
 import { v4 } from "uuid";
 import $ from "jquery";
 
+import HeaderBar from "../HeaderBar/HeaderBarMax";
 import {
   projectDataFetch,
   retrieveAllProjectsIds,
 } from "../../../Data/ProjectSlice";
 
 import "./APIStyles.scss";
-import { dataBaseUrl, localUrl, store } from "../../../../routes/routerBlock";
+import {
+  dataBaseUrl,
+  localUrl,
+  userBaseUrl,
+  store,
+} from "../../../../routes/routerBlock";
 
 interface FormConfigurationInterface {
   styles: any;
@@ -23,9 +30,8 @@ interface FormConfigurationInterface {
   };
   ids: {
     mediaDataIds: {
-      current: {
+      current: Record<string, any> & {
         video: string | number;
-        muralPhoto: string | number;
         galleryPhoto: string | number;
         passage: string | number;
       };
@@ -34,12 +40,26 @@ interface FormConfigurationInterface {
       React.SetStateAction<{
         current: {
           video: string | number;
-          muralPhoto: string | number;
           galleryPhoto: string | number;
           passage: string | number;
         };
       }>
     >;
+  };
+  formFacade: {
+    initialInputs: Array<{ name: string; inputType: string }>;
+    mediaInputsNav: Array<{ mediaType: string; buttonText: string }>;
+    mediaMiniFormInputs: Array<{
+      mediaType: string;
+      addButtonText: string;
+      inputsOpts: Array<{
+        key: string;
+        typeOfInput: string;
+        childrenElements?: Array<any>;
+        initialValue?: any;
+      }>;
+      inputsDeletionCallback: Function;
+    }>;
   };
   formPreviewDataOpts: {
     formPreviewData: {
@@ -70,6 +90,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
   styles,
   customInitialFormValues,
   ids,
+  formFacade,
   formPreviewDataOpts,
   customFormSchema,
   storedRefs,
@@ -79,6 +100,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
   const { initialFormValues } = customInitialFormValues;
   const { validSchema, setValidSchema } = customFormSchema;
   const { mediaDataIds, setMediaDataIds } = ids;
+  const { initialInputs, mediaInputsNav, mediaMiniFormInputs } = formFacade;
   const { formPreviewData, setFormPreviewData } = formPreviewDataOpts;
 
   const [extraHeaderOptions, setExtraHeaderOptions] = React.useState(() => {
@@ -109,7 +131,8 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
     classNameForStyle: string,
     childElements?: Array<any>,
     dataConfigObject?: object,
-    initialInputValue?: any
+    initialInputValue?: any,
+    inputsDeletionCallBack?: Function
   ) => {
     const generatedSubId = v4();
 
@@ -227,43 +250,43 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       newFormInputElement.onchange = (event) => {
         let eventTyped = (event as unknown) as React.ChangeEvent<HTMLInputElement>;
         let extractedValue = eventTyped.target.value;
-        let allRetrievedReferences = (eventTyped.target.parentNode?.parentNode
+        let allRetrievedSubInputs = (eventTyped.target.parentNode?.parentNode
           ?.childNodes as unknown) as Array<HTMLDivElement>;
-        let allRetrievedReferencesConverted = Array.prototype.slice.call(
-          allRetrievedReferences
+        let allRetrievedSubInputsConverted = Array.prototype.slice.call(
+          allRetrievedSubInputs
         );
 
-        let retrievedElementIndex = allRetrievedReferencesConverted.findIndex(
+        let retrievedElementIndex = allRetrievedSubInputsConverted.findIndex(
           (element) =>
             element.id ===
             `${mediaType}-${mediaKeyRef}-${dataKeyRefId}-subId-${generatedSubId}`
         );
 
-        let retrievedPreviousFormValuesForReferences: Array<string> = [];
-        for (let i = 0; i < allRetrievedReferencesConverted.length; i++) {
-          retrievedPreviousFormValuesForReferences.push(
-            allRetrievedReferencesConverted[i].childNodes[2][`value`]
+        let retrievedPreviousFormValuesForSubInputs: Array<string> = [];
+        for (let i = 0; i < allRetrievedSubInputsConverted.length; i++) {
+          retrievedPreviousFormValuesForSubInputs.push(
+            allRetrievedSubInputsConverted[i].childNodes[2][`value`]
           );
         }
 
         if (retrievedElementIndex && retrievedElementIndex > 0) {
-          retrievedPreviousFormValuesForReferences.splice(
+          retrievedPreviousFormValuesForSubInputs.splice(
             retrievedElementIndex,
             1,
             extractedValue
           );
         } else if (retrievedElementIndex === 0) {
-          if (allRetrievedReferencesConverted.length > 1) {
-            retrievedPreviousFormValuesForReferences.shift();
-            retrievedPreviousFormValuesForReferences.unshift(extractedValue);
+          if (allRetrievedSubInputsConverted.length > 1) {
+            retrievedPreviousFormValuesForSubInputs.shift();
+            retrievedPreviousFormValuesForSubInputs.unshift(extractedValue);
           } else {
-            retrievedPreviousFormValuesForReferences = [`${extractedValue}`];
+            retrievedPreviousFormValuesForSubInputs = [`${extractedValue}`];
           }
         }
 
         formikConf.setFieldValue(
           `${mediaType}s.${mediaType}Data-${dataKeyRefId}.${mediaKeyRef}s`,
-          retrievedPreviousFormValuesForReferences
+          retrievedPreviousFormValuesForSubInputs
         );
 
         setFormPreviewData((previousFormPreviewData: any) => {
@@ -273,7 +296,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
               ...previousFormPreviewData[`current`],
               data: {
                 ...previousFormPreviewData[`current`][`data`],
-                [`${mediaKeyRef}s`]: retrievedPreviousFormValuesForReferences,
+                [`${mediaKeyRef}s`]: retrievedPreviousFormValuesForSubInputs,
               },
             },
           };
@@ -367,30 +390,59 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       newFormFileInputElement.type = "file";
       newFormFileInputElement.name = `${mediaType}s.${mediaType}Data-${dataKeyRefId}.${mediaKeyRef}`;
       newFormFileInputElement.className = `${classNameForStyle}-file-input`;
-
+      newFormFileInputElement.accept = `image/*`;
       newFormFileInputElement.onchange = (event) => {
-        console.log({ event });
         const eventTyped = (event as unknown) as React.ChangeEvent<HTMLInputElement>;
-        let fileToURL = eventTyped[`target`][`files`]
-          ? URL.createObjectURL(eventTyped[`target`][`files`][0])
-          : undefined;
-        formikConf.setFieldValue(
-          `${mediaType}s.${mediaType}Data-${dataKeyRefId}.${mediaKeyRef}`,
-          fileToURL
-        );
-        formikConf.handleBlur(event);
-        setFormPreviewData((previousFormPreviewData: any) => {
-          return {
-            ...previousFormPreviewData,
-            current: {
-              ...previousFormPreviewData[`current`],
-              data: {
-                ...previousFormPreviewData[`current`][`data`],
-                [mediaKeyRef]: fileToURL,
-              },
-            },
-          };
+        console[`log`]({
+          event,
+          eventTyped,
+          inputFileData: eventTyped[`target`][`files`],
         });
+        if (
+          eventTyped[`target`][`files`] &&
+          eventTyped[`target`][`files`][`length`] > 0
+        ) {
+          let fileToURL = eventTyped[`target`][`files`]
+            ? URL.createObjectURL(eventTyped[`target`][`files`][0])
+            : undefined;
+          console[`log`]({ fileToURL });
+
+          formikConf.setFieldValue(
+            `${mediaType}s.${mediaType}Data-${dataKeyRefId}.${mediaKeyRef}`,
+            fileToURL
+          );
+          formikConf.handleBlur(event);
+          setFormPreviewData((previousFormPreviewData: any) => {
+            return {
+              ...previousFormPreviewData,
+              current: {
+                ...previousFormPreviewData[`current`],
+                data: {
+                  ...previousFormPreviewData[`current`][`data`],
+                  [mediaKeyRef]: fileToURL,
+                },
+              },
+            };
+          });
+        } else {
+          formikConf.setFieldValue(
+            `${mediaType}s.${mediaType}Data-${dataKeyRefId}.${mediaKeyRef}`,
+            ``
+          );
+          formikConf.handleBlur(event);
+          setFormPreviewData((previousFormPreviewData: any) => {
+            return {
+              ...previousFormPreviewData,
+              current: {
+                ...previousFormPreviewData[`current`],
+                data: {
+                  ...previousFormPreviewData[`current`][`data`],
+                  [mediaKeyRef]: ``,
+                },
+              },
+            };
+          });
+        }
       };
 
       if (initialInputValue) {
@@ -553,7 +605,8 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
               }
               handleCurrentMediaInputsSelectedStyle(
                 allInputNodesRetrieved,
-                `${mediaType}Data-${dataKeyRefId}`
+                `${mediaType}Data-${dataKeyRefId}`,
+                mediaType
               );
 
               setMediaDataIds((previousMediaDataIds: any) => {
@@ -633,26 +686,20 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
           eventTyped.target.parentNode
         );
         setFormPreviewData((previousFormPreviewData) => {
-          let dataReset = {};
-          if (mediaType === `video`) {
-            dataReset = { name: ``, url: ``, type: `` };
-          } else if (mediaType === `galleryPhoto`) {
-            dataReset = { title: ``, photo: `reset`, references: [``] };
-          } else if (mediaType === `passage`) {
-            dataReset = {
-              title: ``,
-              whatIsIt: ``,
-              content: ``,
-              references: [``],
+          console.log({ inputsDeletionCallBack });
+          if (inputsDeletionCallBack) {
+            let dataReset = inputsDeletionCallBack();
+            console.log({ dataReset });
+            return {
+              ...previousFormPreviewData,
+              [`current`]: {
+                [`type`]: mediaType,
+                [`data`]: dataReset,
+              },
             };
+          } else {
+            return previousFormPreviewData;
           }
-          return {
-            ...previousFormPreviewData,
-            [`current`]: {
-              [`type`]: mediaType,
-              [`data`]: dataReset,
-            },
-          };
         });
         setMediaDataIds((previousMediaDataIds) => {
           let idsConfig = {
@@ -670,47 +717,51 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       newFormElementsRemoveButton.onclick = (event) => {
         let eventTyped = (event as unknown) as React.ChangeEvent<HTMLInputElement>;
 
-        let allRetrievedInputReferences = (eventTyped.target.parentNode
-          ?.parentNode?.childNodes as unknown) as Array<HTMLDivElement>;
+        let allRetrievedSubInputs = (eventTyped.target.parentNode?.parentNode
+          ?.childNodes as unknown) as Array<HTMLDivElement>;
 
-        let allRetrievedInputReferencesConverted = Array.prototype.slice.call(
-          allRetrievedInputReferences
+        let allRetrievedSubInputsConverted = Array.prototype.slice.call(
+          allRetrievedSubInputs
         );
 
-        let retrievedElementIndex = allRetrievedInputReferencesConverted.findIndex(
+        let retrievedElementIndex = allRetrievedSubInputsConverted.findIndex(
           (element) =>
             element.id ===
             `${mediaType}-${mediaKeyRef}-${dataKeyRefId}-subId-${generatedSubId}`
         );
 
-        let updatedReferencesValues: Array<string> = [];
+        let updatedSubInputsValues: Array<string> = [];
 
-        allRetrievedInputReferences.forEach((referenceElement) => {
-          let typedReferenceElement = (referenceElement
+        allRetrievedSubInputs.forEach((referenceElement) => {
+          let typedSubInputElement = (referenceElement
             .childNodes[2] as unknown) as HTMLInputElement;
-          updatedReferencesValues.push(typedReferenceElement.value);
+          updatedSubInputsValues.push(typedSubInputElement.value);
         });
 
-        if (updatedReferencesValues.length >= 1) {
+        if (updatedSubInputsValues.length >= 1) {
           if (
             retrievedElementIndex > 0 &&
-            retrievedElementIndex < updatedReferencesValues.length - 1
+            retrievedElementIndex < updatedSubInputsValues.length - 1
           ) {
-            updatedReferencesValues.splice(retrievedElementIndex, 1);
+            updatedSubInputsValues.splice(retrievedElementIndex, 1);
           } else if (
-            retrievedElementIndex === updatedReferencesValues.length - 1 &&
+            retrievedElementIndex === updatedSubInputsValues.length - 1 &&
             retrievedElementIndex !== 0
           ) {
-            updatedReferencesValues.pop();
+            updatedSubInputsValues.pop();
           } else if (retrievedElementIndex === 0) {
-            updatedReferencesValues.shift();
+            updatedSubInputsValues.shift();
           }
         }
 
         formikConf.setFieldValue(
           `${mediaType}s.${mediaType}Data-${dataKeyRefId}.${mediaKeyRef}s`,
-          updatedReferencesValues
+          updatedSubInputsValues
         );
+
+        console.log({
+          subIndexCheckForRemoving: allRetrievedSubInputs.length - 1,
+        });
 
         setValidSchema((prevYupSchema: any) => {
           let updatedSchema = createYupSchema({
@@ -719,7 +770,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
               id: {
                 mediaType: `${mediaType}s`,
                 dataRefId: `${mediaType}Data-${dataKeyRefId}`,
-                inputKeyRef: `references`,
+                inputKeyRef: `${mediaKeyRef}s`,
               },
               validationType: `array`,
               validations: [
@@ -729,7 +780,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
                 },
                 {
                   type: `length`,
-                  params: allRetrievedInputReferences.length - 1,
+                  params: allRetrievedSubInputs.length - 1,
                 },
               ],
             },
@@ -737,7 +788,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
           return updatedSchema;
         });
 
-        console.log({ allRetrievedInputReferences, updatedReferencesValues });
+        console.log({ allRetrievedSubInputs, updatedSubInputsValues });
 
         eventTyped.target.parentNode?.parentNode?.removeChild(
           eventTyped.target.parentNode
@@ -766,6 +817,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       childrenElements?: Array<any>;
       initialValue?: any;
     }>,
+    inputsDeletionCallback: Function,
     elementToAppendTo?: HTMLElement,
     inputId?: string
   ) => {
@@ -773,9 +825,18 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
 
     let newFormInputElementsHold = [];
 
-    let newFormInputElementsForReferencesHold = [];
+    let newFormInputElementsForSubInputsHold: Record<string, Array<any>> = {};
 
-    let newInputsReferenceId = v4();
+    inputElementsKeyRefs.forEach((keyRef) => {
+      if (keyRef.typeOfInput === `textInputWithSubIndex`) {
+        newFormInputElementsForSubInputsHold = {
+          ...newFormInputElementsForSubInputsHold,
+          [`${keyRef.key}`]: [],
+        };
+      }
+    });
+
+    let newSubInputsId = v4();
 
     let dataConfigObject: object = {};
 
@@ -787,12 +848,14 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
         */
 
       if (inputElementsKeyRefs[i].typeOfInput === `textInputWithSubIndex`) {
-        newFormInputElementsForReferencesHold.push(
+        newFormInputElementsForSubInputsHold[
+          `${inputElementsKeyRefs[i].key}`
+        ].push(
           newFormElement(
             `${inputElementsKeyRefs[i].typeOfInput}`,
             `${whichMediaType}`,
             `${inputElementsKeyRefs[i].key}`,
-            inputId ? inputId : newInputsReferenceId,
+            inputId ? inputId : newSubInputsId,
             `${whichMediaType}-${inputElementsKeyRefs[i].key}`,
             undefined,
             undefined,
@@ -807,7 +870,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
             `${inputElementsKeyRefs[i].typeOfInput}`,
             `${whichMediaType}`,
             `${inputElementsKeyRefs[i].key}`,
-            inputId ? inputId : newInputsReferenceId,
+            inputId ? inputId : newSubInputsId,
             `${whichMediaType}-${inputElementsKeyRefs[i].key}`,
             undefined,
             undefined,
@@ -826,7 +889,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
             `${inputElementsKeyRefs[i].typeOfInput}`,
             `${whichMediaType}`,
             `${inputElementsKeyRefs[i].key}`,
-            inputId ? inputId : newInputsReferenceId,
+            inputId ? inputId : newSubInputsId,
             `${whichMediaType}-${inputElementsKeyRefs[i].key}`,
             undefined,
             undefined,
@@ -845,7 +908,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
             `${inputElementsKeyRefs[i].typeOfInput}`,
             `${whichMediaType}`,
             `${inputElementsKeyRefs[i].key}`,
-            inputId ? inputId : newInputsReferenceId,
+            inputId ? inputId : newSubInputsId,
             `${whichMediaType}-${inputElementsKeyRefs[i].key}`,
             inputElementsKeyRefs[i].childrenElements,
             undefined,
@@ -866,7 +929,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
               id: {
                 mediaType: `${whichMediaType}s`,
                 dataRefId: `${whichMediaType}Data-${
-                  inputId ? inputId : newInputsReferenceId
+                  inputId ? inputId : newSubInputsId
                 }`,
                 inputKeyRef: `${inputElementsKeyRefs[i].key}`,
               },
@@ -888,32 +951,91 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       }
     }
 
-    if (newFormInputElementsForReferencesHold.length > 0) {
-      dataConfigObject = { ...dataConfigObject, [`references`]: undefined };
+    for (let sI in newFormInputElementsForSubInputsHold) {
+      let subInputsLength = newFormInputElementsForSubInputsHold[sI].length;
+      console.log({ subInputsLength });
+      if (subInputsLength > 0) {
+        dataConfigObject = { ...dataConfigObject, [`${sI}s`]: undefined };
 
-      let initialReferencesFragment = document.createElement("div");
-      initialReferencesFragment.className = `elementAdjustmentsForReferences`;
+        let initialSubInputsFragment = document.createElement("div");
+        initialSubInputsFragment.className = `elementAdjustmentsForSubInputs`;
 
-      let addReferenceInputButton = document.createElement("div");
-      addReferenceInputButton.className = `${whichMediaType}-add-reference-button`;
-      addReferenceInputButton.innerHTML = `+`;
-      addReferenceInputButton.onclick = (event) => {
-        let eventTyped = (event as unknown) as React.ChangeEvent<HTMLInputElement>;
+        let addSubInputButton = document.createElement("div");
+        addSubInputButton.className = `${whichMediaType}-add-${sI}-button`;
+        addSubInputButton.innerHTML = `+`;
+        addSubInputButton.onclick = (event) => {
+          let eventTyped = (event as unknown) as React.ChangeEvent<HTMLInputElement>;
 
-        const retrievingNewSubIndex = () => {
-          let clarifiedNewSubIndex =
-            eventTyped.target.parentNode?.childNodes[3].childNodes.length;
-          return clarifiedNewSubIndex;
+          const retrievingNewSubIndex = () => {
+            let clarifiedNewSubIndex =
+              eventTyped.target.parentNode?.childNodes[3].childNodes.length;
+            return clarifiedNewSubIndex;
+          };
+          const retrievedNewSubIndex = retrievingNewSubIndex();
+          console.log({
+            subIndexCheckForAdding: retrievedNewSubIndex
+              ? retrievedNewSubIndex + 1
+              : -1,
+          });
+
+          let addedSubInputElement = newFormElement(
+            `textInputWithSubIndex`,
+            `${whichMediaType}`,
+            `${sI}`,
+            inputId ? inputId : newSubInputsId,
+            `${whichMediaType}-${sI}`
+          );
+
+          setValidSchema((prevYupSchema: any) => {
+            let updatedSchema = createYupSchema({
+              schema: prevYupSchema,
+              config: {
+                id: {
+                  mediaType: `${whichMediaType}s`,
+                  dataRefId: `${whichMediaType}Data-${
+                    inputId ? inputId : newSubInputsId
+                  }`,
+                  inputKeyRef: `${sI}s`,
+                },
+                validationType: `array`,
+                validations: [
+                  {
+                    type: `of`,
+                    params: yup.string().required(),
+                  },
+                  {
+                    type: `length`,
+                    params: retrievedNewSubIndex ? retrievedNewSubIndex + 1 : 1,
+                  },
+                ],
+              },
+            });
+            console.log(`checking if logic is firing for adding subInputs`, {
+              retrievedNewSubIndex,
+              updatedSchema,
+            });
+            return updatedSchema;
+          });
+
+          eventTyped.target.parentNode?.childNodes[3].appendChild(
+            addedSubInputElement
+          );
+
+          addedSubInputElement.scrollIntoView(false);
         };
-        const retrievedNewSubIndex = retrievingNewSubIndex();
 
-        let addedReferenceInputElement = newFormElement(
-          `textInputWithSubIndex`,
+        let initialSubInputs = newFormElement(
+          `inputsContainer`,
           `${whichMediaType}`,
-          `reference`,
-          inputId ? inputId : newInputsReferenceId,
-          `${whichMediaType}-reference`
+          `${sI}s`,
+          inputId ? inputId : newSubInputsId,
+          `${whichMediaType}-${sI}s`,
+          newFormInputElementsForSubInputsHold[sI]
         );
+
+        initialSubInputs.firstChild?.after(addSubInputButton);
+
+        newFormInputElementsHold.push(initialSubInputs);
 
         setValidSchema((prevYupSchema: any) => {
           let updatedSchema = createYupSchema({
@@ -922,9 +1044,9 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
               id: {
                 mediaType: `${whichMediaType}s`,
                 dataRefId: `${whichMediaType}Data-${
-                  inputId ? inputId : newInputsReferenceId
+                  inputId ? inputId : newSubInputsId
                 }`,
-                inputKeyRef: `references`,
+                inputKeyRef: `${sI}s`,
               },
               validationType: `array`,
               validations: [
@@ -934,70 +1056,28 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
                 },
                 {
                   type: `length`,
-                  params: retrievedNewSubIndex ? retrievedNewSubIndex + 1 : 1,
+                  params: subInputsLength,
                 },
               ],
             },
           });
           return updatedSchema;
         });
-
-        eventTyped.target.parentNode?.childNodes[3].appendChild(
-          addedReferenceInputElement
-        );
-
-        addedReferenceInputElement.scrollIntoView(false);
-      };
-
-      let initialReferencesInputs = newFormElement(
-        `inputsContainer`,
-        `${whichMediaType}`,
-        `references`,
-        inputId ? inputId : newInputsReferenceId,
-        `${whichMediaType}-references`,
-        newFormInputElementsForReferencesHold
-      );
-
-      initialReferencesInputs.firstChild?.after(addReferenceInputButton);
-
-      newFormInputElementsHold.push(initialReferencesInputs);
-
-      setValidSchema((prevYupSchema: any) => {
-        let updatedSchema = createYupSchema({
-          schema: prevYupSchema,
-          config: {
-            id: {
-              mediaType: `${whichMediaType}s`,
-              dataRefId: `${whichMediaType}Data-${
-                inputId ? inputId : newInputsReferenceId
-              }`,
-              inputKeyRef: `references`,
-            },
-            validationType: `array`,
-            validations: [
-              {
-                type: `of`,
-                params: yup.string().required(),
-              },
-              {
-                type: `length`,
-                params: newFormInputElementsForReferencesHold.length,
-              },
-            ],
-          },
-        });
-        return updatedSchema;
-      });
+      }
     }
+
+    console.log({ inputsDeletionCallBackp1: inputsDeletionCallback() });
 
     newFormInputs = newFormElement(
       `inputsContainer`,
       `${whichMediaType}`,
       `data`,
-      inputId ? inputId : newInputsReferenceId,
+      inputId ? inputId : newSubInputsId,
       `${whichMediaType}`,
       newFormInputElementsHold,
-      dataConfigObject
+      dataConfigObject,
+      undefined,
+      inputsDeletionCallback
     );
 
     if (elementToAppendTo) {
@@ -1005,7 +1085,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       newFormInputs.scrollIntoView(false);
     }
     return {
-      id: `${whichMediaType}Data-${inputId ? inputId : newInputsReferenceId}`,
+      id: `${whichMediaType}Data-${inputId ? inputId : newSubInputsId}`,
       inputs: newFormInputs,
     };
   };
@@ -1016,6 +1096,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
       let checkedIfMiniForm = RegExp(`MiniForm`).test(x);
       if (checkedIfMiniForm) {
         let checkedIfFormMatches = RegExp(switchTo).test(x);
+        console.log({ storedRefs, x });
         if (checkedIfFormMatches) {
           storedRefs[x].current.style.display = `flex`;
         } else {
@@ -1028,18 +1109,9 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
   // Handle styling of currently selected media data inputs
   const handleCurrentMediaInputsSelectedStyle = (
     childNodesForStyling: Array<HTMLDivElement>,
-    selectedChildId: string
+    selectedChildId: string,
+    mediaType: string
   ) => {
-    let whichMedia = ``;
-    if (selectedChildId.includes(`video`)) {
-      whichMedia = `video`;
-    } else if (selectedChildId.includes(`muralPhoto`)) {
-      whichMedia = `muralPhoto`;
-    } else if (selectedChildId.includes(`galleryPhoto`)) {
-      whichMedia = `galleryPhoto`;
-    } else if (selectedChildId.includes(`passage`)) {
-      whichMedia = `passage`;
-    }
     for (let q = 0; q < childNodesForStyling.length; q++) {
       let childNodeTyped = (childNodesForStyling[
         q
@@ -1052,7 +1124,7 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
         childNodeLabelElementTyped.className = `media-selected-label`;
       } else {
         childNodeTyped.style.backgroundColor = `black`;
-        childNodeLabelElementTyped.className = `${whichMedia}-label`;
+        childNodeLabelElementTyped.className = `${mediaType}-label`;
       }
     }
   };
@@ -1133,21 +1205,29 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
   // Handle incoming data for form
   React.useEffect(() => {
     if (dataForForm[`forId`] !== `` && dataForForm[`forId`] !== undefined) {
-      if (dataForForm[`forId`][`includes`](`passage`)) {
+      if (dataForForm[`forId`][`includes`](`forStorage`)) {
+        console.log(`includes for storage`);
+        let dataId = dataForForm[`forId`];
+        let idExtracted = dataId.slice(11);
+        let extractedKey = dataId.substring(11, dataId.lastIndexOf(`Data`));
+        console.log({ idExtracted, extractedKey, dataForForm });
         formikConf.setFieldValue(
-          `passages.${dataForForm[`forId`]}.${dataForForm[`forInput`]}`,
+          `${extractedKey}s.${idExtracted}.${dataForForm[`forInput`]}`,
           dataForForm[`inputValue`]
         );
         setFormPreviewData((previousFormPreviewData) => {
+          console.log({
+            previousFormPreviewDataCheckText: previousFormPreviewData,
+          });
           return {
             ...previousFormPreviewData,
             stored: {
               ...previousFormPreviewData[`stored`],
-              [`passages`]: {
-                ...previousFormPreviewData[`stored`][`passages`],
-                [`${dataForForm[`forId`]}`]: {
-                  ...previousFormPreviewData[`stored`][`passages`][
-                    `${dataForForm[`forId`]}`
+              [`${extractedKey}s`]: {
+                ...previousFormPreviewData[`stored`][`${extractedKey}s`],
+                [`${idExtracted}`]: {
+                  ...previousFormPreviewData[`stored`][`${extractedKey}s`][
+                    `${idExtracted}`
                   ],
                   [`${dataForForm[`forInput`]}`]: dataForForm[`inputValue`],
                 },
@@ -1175,118 +1255,78 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
         });
       } else if (dataForForm[`forId`][`includes`](`DataAnnihilation`)) {
         console.log(`Data annihilation initiated`);
-        formikConf.setFieldValue(`test.title`, ``);
-        formikConf.setFieldValue(`videos`, dataForForm[`inputValue`]);
-        formikConf.setFieldValue(`muralPhotos`, dataForForm[`inputValue`]);
-        formikConf.setFieldValue(`galleryPhotos`, dataForForm[`inputValue`]);
-        formikConf.setFieldValue(`passages`, dataForForm[`inputValue`]);
-        setValidSchema(() => {
+        let forValidSchema = {};
+        initialInputs.forEach((values) => {
+          formikConf.setFieldValue(`test.${values.name}`, ``);
+          forValidSchema = {
+            ...forValidSchema,
+            [`${values.name}`]: yup.string().required(),
+          };
+        });
+
+        setValidSchema((prevValidSchema: any) => {
+          console.log({ prevValidSchemaForDataAnnihilation: prevValidSchema });
           const schemaReset = yup.object().shape({
-            test: yup.object().shape({
-              title: yup.string().required(),
-            }),
+            test: yup.object().shape(forValidSchema),
           });
           return schemaReset;
         });
+
+        mediaInputsNav.forEach((values) => {
+          formikConf.setFieldValue(
+            `${values.mediaType}s`,
+            dataForForm[`inputValue`]
+          );
+        });
       } else if (dataForForm[`forId`][`includes`](`fetchedProjectData`)) {
-        console.log({ dataForForm });
+        console.log(`fetched project data for form process initiated`, {
+          dataForForm,
+        });
 
-        for (let v in dataForForm[`inputValue`][`videos`]) {
-          let dataExtracted = dataForForm[`inputValue`][`videos`][v];
-          const { id } = addNewInputs(
-            `video`,
-            [
-              {
-                key: `name`,
-                typeOfInput: `textInput`,
-                initialValue: dataExtracted[`name`],
-              },
-              {
-                key: `url`,
-                typeOfInput: `textInput`,
-                initialValue: dataExtracted[`url`],
-              },
-              {
-                key: `type`,
-                typeOfInput: `listInput`,
-                childrenElements: [`youtube`, `not listed`],
-                initialValue: dataExtracted[`type`],
-              },
-            ],
-            storedRefs[`videosInputViewRef`].current,
-            dataExtracted[`id`]
-          );
-        }
-        for (let gP in dataForForm[`inputValue`][`galleryPhotos`]) {
-          let dataExtracted = dataForForm[`inputValue`][`galleryPhotos`][gP];
-          const { id } = addNewInputs(
-            `galleryPhoto`,
-            [
-              {
-                key: `photo`,
-                typeOfInput: `fileInput`,
-                initialValue: dataExtracted[`photo`],
-              },
-              {
-                key: `title`,
-                typeOfInput: `textInput`,
-                initialValue: dataExtracted[`title`],
-              },
-              {
-                key: `reference`,
-                typeOfInput: `textInputWithSubIndex`,
-                initialValue: dataExtracted[`references`][0],
-              },
-            ],
-            storedRefs[`galleryPhotosInputViewRef`].current,
-            dataExtracted[`id`]
-          );
-        }
-        for (let p in dataForForm[`inputValue`][`passages`]) {
-          let dataExtracted = dataForForm[`inputValue`][`passages`][p];
-          const { id } = addNewInputs(
-            `passage`,
-            [
-              {
-                key: `title`,
-                typeOfInput: `textInput`,
-                initialValue: dataExtracted[`title`],
-              },
-              {
-                key: `whatIsIt`,
-                typeOfInput: `textInput`,
-                initialValue: dataExtracted[`whatIsIt`],
-              },
-              {
-                key: `content`,
-                typeOfInput: ``,
-                initialValue: dataExtracted[`content`],
-              },
-              {
-                key: `reference`,
-                typeOfInput: `textInputWithSubIndex`,
-                initialValue: dataExtracted[`references`][0],
-              },
-            ],
-            storedRefs[`passagesInputViewRef`].current,
-            dataExtracted[`id`]
-          );
-        }
+        mediaMiniFormInputs.forEach((values) => {
+          for (let k in dataForForm[`inputValue`][`${values.mediaType}s`]) {
+            let dataExtracted =
+              dataForForm[`inputValue`][`${values.mediaType}s`][k];
+            let configgedInputOpts = values.inputsOpts.map((opts) => {
+              let retrievedIndexedData =
+                dataExtracted[
+                  opts.typeOfInput === `textInputWithSubIndex`
+                    ? `${opts.key}s`
+                    : opts.key
+                ];
+              return {
+                ...opts,
+                initialValue:
+                  typeof retrievedIndexedData === `object`
+                    ? retrievedIndexedData[0]
+                    : retrievedIndexedData,
+              };
+            });
+            const { id } = addNewInputs(
+              `${values.mediaType}`,
+              configgedInputOpts,
+              values.inputsDeletionCallback,
+              storedRefs[`${values.mediaType}sInputViewRef`].current,
+              dataExtracted[`id`]
+            );
+          }
+        });
+        console.log({ formikConfForFetchedDataP1: formikConf, validSchema });
 
-        formikConf.setFieldValue(
-          `test.title`,
-          dataForForm[`inputValue`][`test`][`title`]
-        );
-        formikConf.setFieldValue(`videos`, dataForForm[`inputValue`][`videos`]);
-        formikConf.setFieldValue(
-          `galleryPhotos`,
-          dataForForm[`inputValue`][`galleryPhotos`]
-        );
-        formikConf.setFieldValue(
-          `passages`,
-          dataForForm[`inputValue`][`passages`]
-        );
+        initialInputs.forEach((values) => {
+          formikConf.setFieldValue(
+            `test.${values.name}`,
+            dataForForm[`inputValue`][`test`][`${values.name}`]
+          );
+        });
 
+        mediaMiniFormInputs.forEach((values) => {
+          formikConf.setFieldValue(
+            `${values.mediaType}s`,
+            dataForForm[`inputValue`][`${values.mediaType}s`]
+          );
+        });
+        console.log({ formikConfForFetchedDataP2: formikConf });
         setExtraHeaderOptions(() => {
           return (
             <div
@@ -1335,388 +1375,130 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
           className={styles.innerFormMainDisplay}
           style={styles.innerFormDisplaySupport}
         >
-          <div className={styles.formDataInputsHeader}>
-            {extraHeaderOptions}
-            <button
-              type={`submit`}
-              className={styles.innerFormSubmitButton}
-            >{`Submit`}</button>
+          <div className={styles[`formOptionsContainer`]}>
+            <div className={styles.formDataInputsHeader}>
+              {extraHeaderOptions}
+              <button
+                type={`submit`}
+                className={styles.innerFormSubmitButton}
+              >{`Submit`}</button>
+            </div>
+            <div className={styles[`formOptionsInitialInputs`]}>
+              {initialInputs.map((values) => {
+                return (
+                  <input
+                    name={`test.${values.name}`}
+                    placeholder={`${values.name.toUpperCase()}`}
+                    className={styles.anIdeaTitle}
+                    type={values.inputType}
+                    value={formikConf.values.test[`${values.name}`]}
+                    onChange={(event) => {
+                      formikConf.handleChange(event);
+                      formikConf.handleBlur(event);
+                    }}
+                    onBlur={formikConf.handleBlur}
+                    autoComplete={"off"}
+                  />
+                );
+              })}
+            </div>
+            <div className={styles.mediaSelectionNavDisplay}>
+              {mediaInputsNav.map((values) => {
+                return (
+                  <div
+                    className={styles.mediaSelectionNavButton}
+                    onClick={(event) => {
+                      switchMediaMiniForm(`${values.mediaType}s`);
+                      setFormPreviewData((previousMediaPreviewData) => {
+                        const fetchingMediaPreviewData = () => {
+                          if (
+                            mediaDataIds[`current`][`${values.mediaType}`] !==
+                              `` &&
+                            mediaDataIds[`current`][`${values.mediaType}`] !==
+                              -1
+                          ) {
+                            return {
+                              ...previousMediaPreviewData,
+                              current: {
+                                type: `${values.mediaType}`,
+                                data:
+                                  formikConf[`values`][`${values.mediaType}s`][
+                                    mediaDataIds[`current`][
+                                      `${values.mediaType}`
+                                    ]
+                                  ],
+                              },
+                            };
+                          } else {
+                            return previousMediaPreviewData;
+                          }
+                        };
+                        const fetchedMediaPreviewData = fetchingMediaPreviewData();
+                        return fetchedMediaPreviewData;
+                      });
+                    }}
+                  >{`${values.buttonText}`}</div>
+                );
+              })}
+            </div>
           </div>
-          <input
-            name={`test.title`}
-            placeholder={`TITLE`}
-            className={styles.anIdeaTitle}
-            type={"text"}
-            value={formikConf.values.test.title}
-            onChange={(event) => {
-              formikConf.handleChange(event);
-              formikConf.handleBlur(event);
-            }}
-            onBlur={formikConf.handleBlur}
-            autoComplete={"off"}
-          />
-          <div className={styles.mediaSelectionNavDisplay}>
-            <div
-              className={styles.mediaSelectionNavButton}
-              onClick={(event) => {
-                switchMediaMiniForm(`videos`);
-                setFormPreviewData((previousMediaPreviewData: any) => {
-                  const fetchingMediaPreviewData = () => {
-                    if (
-                      mediaDataIds[`current`][`video`] !== `` &&
-                      mediaDataIds[`current`][`video`] !== -1
-                    ) {
+          {mediaMiniFormInputs.map((values) => {
+            return (
+              <div
+                ref={storedRefs[`${values.mediaType}sMiniForm`]}
+                className={styles.innerFormSectionContainer}
+              >
+                <button
+                  type={`button`}
+                  className={styles.innerFormAddInputButton}
+                  onClick={(event) => {
+                    const { id } = addNewInputs(
+                      `${values.mediaType}`,
+                      values.inputsOpts,
+                      values.inputsDeletionCallback,
+                      storedRefs[`${values.mediaType}sInputViewRef`].current
+                    );
+                    const eventTyped = (event as unknown) as React.ChangeEvent<HTMLButtonElement>;
+                    const parentNodeRetrieved = (eventTyped[`currentTarget`][
+                      `parentNode`
+                    ] as unknown) as HTMLDivElement;
+                    const inputsContainerRetrieved = (parentNodeRetrieved[
+                      `childNodes`
+                    ][1][`childNodes`] as unknown) as Array<HTMLDivElement>;
+
+                    handleCurrentMediaInputsSelectedStyle(
+                      inputsContainerRetrieved,
+                      id,
+                      values.mediaType
+                    );
+                    setMediaDataIds((previousMediaDataIds: any) => {
                       return {
-                        ...previousMediaPreviewData,
-                        current: {
-                          type: `video`,
-                          data:
-                            formikConf[`values`][`videos`][
-                              mediaDataIds[`current`][`video`]
-                            ],
+                        ...previousMediaDataIds,
+                        [`current`]: {
+                          ...previousMediaDataIds[`current`],
+                          [`${values.mediaType}`]: id,
                         },
                       };
-                    } else {
-                      return previousMediaPreviewData;
-                    }
-                  };
-                  const fetchedMediaPreviewData = fetchingMediaPreviewData();
-                  return fetchedMediaPreviewData;
-                });
-              }}
-            >{`Vids`}</div>
-            <div
-              className={styles.mediaSelectionNavButtonDisabled}
-              onClick={(event) => {
-                /*
-                switchMediaMiniForm(`muralPhotos`);
-                setFormPreviewData((previousMediaPreviewData: any) => {
-                  const fetchingMediaPreviewData = () => {
-                    if (
-                      mediaDataIds[`current`][`muralPhoto`] !== `` &&
-                      mediaDataIds[`current`][`muralPhoto`] !== -1
-                    ) {
+                    });
+                    setFormPreviewData((previousFormPreviewData) => {
                       return {
-                        ...previousMediaPreviewData,
+                        ...previousFormPreviewData,
                         current: {
-                          type: `muralPhoto`,
+                          type: `${values.mediaType}`,
                           data:
-                            formikConf[`values`][`muralPhotos`][
-                              mediaDataIds[`current`][`muralPhoto`]
-                            ],
+                            formikConf[`values`][`${values.mediaType}s`][id],
                         },
                       };
-                    } else {
-                      return previousMediaPreviewData;
-                    }
-                  };
-                  const fetchedMediaPreviewData = fetchingMediaPreviewData();
-                  return fetchedMediaPreviewData;
-                });
-                */
-              }}
-            >{`Murals`}</div>
-            <div
-              className={styles.mediaSelectionNavButton}
-              onClick={(event) => {
-                switchMediaMiniForm(`galleryPhotos`);
-                setFormPreviewData((previousMediaPreviewData: any) => {
-                  const fetchingMediaPreviewData = () => {
-                    if (
-                      mediaDataIds[`current`][`galleryPhoto`] !== `` &&
-                      mediaDataIds[`current`][`galleryPhoto`] !== -1
-                    ) {
-                      return {
-                        ...previousMediaPreviewData,
-                        current: {
-                          type: `galleryPhoto`,
-                          data:
-                            formikConf[`values`][`galleryPhotos`][
-                              mediaDataIds[`current`][`galleryPhoto`]
-                            ],
-                        },
-                      };
-                    } else {
-                      return previousMediaPreviewData;
-                    }
-                  };
-                  const fetchedMediaPreviewData = fetchingMediaPreviewData();
-                  return fetchedMediaPreviewData;
-                });
-              }}
-            >{`Gallery`}</div>
-            <div
-              className={styles.mediaSelectionNavButton}
-              onClick={(event) => {
-                switchMediaMiniForm(`passages`);
-                setFormPreviewData((previousMediaPreviewData: any) => {
-                  const fetchingMediaPreviewData = () => {
-                    if (
-                      mediaDataIds[`current`][`passage`] !== `` &&
-                      mediaDataIds[`current`][`passage`] !== -1
-                    ) {
-                      return {
-                        ...previousMediaPreviewData,
-                        current: {
-                          type: `passage`,
-                          data:
-                            formikConf[`values`][`passages`][
-                              mediaDataIds[`current`][`passage`]
-                            ],
-                        },
-                      };
-                    } else {
-                      return previousMediaPreviewData;
-                    }
-                  };
-                  const fetchedMediaPreviewData = fetchingMediaPreviewData();
-                  return fetchedMediaPreviewData;
-                });
-              }}
-            >{`Passages`}</div>
-          </div>
-          <div
-            ref={storedRefs[`videosMiniForm`]}
-            className={styles.innerFormSectionContainer}
-          >
-            <button
-              type={`button`}
-              className={styles.innerFormAddInputButton}
-              onClick={(event) => {
-                const { id } = addNewInputs(
-                  `video`,
-                  [
-                    { key: `name`, typeOfInput: `textInput` },
-                    { key: `url`, typeOfInput: `textInput` },
-                    {
-                      key: `type`,
-                      typeOfInput: `listInput`,
-                      childrenElements: [`youtube`, `not listed`],
-                    },
-                  ],
-                  storedRefs[`videosInputViewRef`].current
-                );
-                const eventTyped = (event as unknown) as React.ChangeEvent<HTMLButtonElement>;
-                const parentNodeRetrieved = (eventTyped[`currentTarget`][
-                  `parentNode`
-                ] as unknown) as HTMLDivElement;
-                const inputsContainerRetrieved = (parentNodeRetrieved[
-                  `childNodes`
-                ][1][`childNodes`] as unknown) as Array<HTMLDivElement>;
-
-                handleCurrentMediaInputsSelectedStyle(
-                  inputsContainerRetrieved,
-                  id
-                );
-                setMediaDataIds((previousMediaDataIds: any) => {
-                  return {
-                    ...previousMediaDataIds,
-                    [`current`]: {
-                      ...previousMediaDataIds[`current`],
-                      [`video`]: id,
-                    },
-                  };
-                });
-                setFormPreviewData((previousFormPreviewData) => {
-                  return {
-                    ...previousFormPreviewData,
-                    current: {
-                      type: `video`,
-                      data: formikConf[`values`][`videos`][id],
-                    },
-                  };
-                });
-              }}
-            >{`Add Video`}</button>
-            <div
-              ref={storedRefs[`videosInputViewRef`]}
-              className={styles.innerFormSectionInputs}
-            ></div>
-          </div>
-          <div
-            ref={storedRefs[`muralPhotosMiniForm`]}
-            className={styles.innerFormSectionContainer}
-          >
-            <button
-              type={`button`}
-              className={styles.innerFormAddInputButton}
-              onClick={(event) => {
-                const { id } = addNewInputs(
-                  `muralPhoto`,
-                  [
-                    { key: `photo`, typeOfInput: `fileInput` },
-                    { key: `whichSet`, typeOfInput: `textInput` },
-                    { key: `name`, typeOfInput: `textInput` },
-                    {
-                      key: `orientation`,
-                      typeOfInput: `listInput`,
-                      childrenElements: [
-                        `bottomLeft`,
-                        `topLeft`,
-                        `middle`,
-                        `bottomRight`,
-                        `topRight`,
-                      ],
-                    },
-                    {
-                      key: `reference`,
-                      typeOfInput: `textInputWithSubIndex`,
-                    },
-                  ],
-                  storedRefs[`muralPhotosInputViewRef`].current
-                );
-                const eventTyped = (event as unknown) as React.ChangeEvent<HTMLButtonElement>;
-                const parentNodeRetrieved = (eventTyped[`currentTarget`][
-                  `parentNode`
-                ] as unknown) as HTMLDivElement;
-                const inputsContainerRetrieved = (parentNodeRetrieved[
-                  `childNodes`
-                ][1][`childNodes`] as unknown) as Array<HTMLDivElement>;
-
-                handleCurrentMediaInputsSelectedStyle(
-                  inputsContainerRetrieved,
-                  id
-                );
-                setMediaDataIds((previousMediaDataIds: any) => {
-                  return {
-                    ...previousMediaDataIds,
-                    [`current`]: {
-                      ...previousMediaDataIds[`current`],
-                      [`muralPhoto`]: id,
-                    },
-                  };
-                });
-                setFormPreviewData((previousFormPreviewData) => {
-                  return {
-                    ...previousFormPreviewData,
-                    current: {
-                      type: `muralPhoto`,
-                      data: formikConf[`values`][`muralPhotos`][id],
-                    },
-                  };
-                });
-              }}
-            >{`Add Mural Photo`}</button>
-            <div
-              ref={storedRefs[`muralPhotosInputViewRef`]}
-              className={styles.innerFormSectionInputs}
-            ></div>
-          </div>
-          <div
-            ref={storedRefs[`galleryPhotosMiniForm`]}
-            className={styles.innerFormSectionContainer}
-          >
-            <button
-              type={`button`}
-              className={styles.innerFormAddInputButton}
-              onClick={(event) => {
-                const { id } = addNewInputs(
-                  `galleryPhoto`,
-                  [
-                    { key: `photo`, typeOfInput: `fileInput` },
-                    { key: `title`, typeOfInput: `textInput` },
-                    {
-                      key: `reference`,
-                      typeOfInput: `textInputWithSubIndex`,
-                    },
-                  ],
-                  storedRefs[`galleryPhotosInputViewRef`].current
-                );
-                const eventTyped = (event as unknown) as React.ChangeEvent<HTMLButtonElement>;
-                const parentNodeRetrieved = (eventTyped[`currentTarget`][
-                  `parentNode`
-                ] as unknown) as HTMLDivElement;
-                const inputsContainerRetrieved = (parentNodeRetrieved[
-                  `childNodes`
-                ][1][`childNodes`] as unknown) as Array<HTMLDivElement>;
-
-                handleCurrentMediaInputsSelectedStyle(
-                  inputsContainerRetrieved,
-                  id
-                );
-                setMediaDataIds((previousMediaDataIds: any) => {
-                  return {
-                    ...previousMediaDataIds,
-                    [`current`]: {
-                      ...previousMediaDataIds[`current`],
-                      [`galleryPhoto`]: id,
-                    },
-                  };
-                });
-                setFormPreviewData((previousFormPreviewData) => {
-                  return {
-                    ...previousFormPreviewData,
-                    current: {
-                      type: `galleryPhoto`,
-                      data: formikConf[`values`][`galleryPhotos`][id],
-                    },
-                  };
-                });
-              }}
-            >{`Add Gallery Photo`}</button>
-            <div
-              ref={storedRefs[`galleryPhotosInputViewRef`]}
-              className={styles.innerFormSectionInputs}
-            ></div>
-          </div>
-          <div
-            ref={storedRefs[`passagesMiniForm`]}
-            className={styles.innerFormSectionContainer}
-          >
-            <button
-              type={`button`}
-              className={styles.innerFormAddInputButton}
-              onClick={(event) => {
-                const { id } = addNewInputs(
-                  `passage`,
-                  [
-                    { key: `title`, typeOfInput: `textInput` },
-                    { key: `whatIsIt`, typeOfInput: `textInput` },
-                    { key: `content`, typeOfInput: `` },
-                    {
-                      key: `reference`,
-                      typeOfInput: `textInputWithSubIndex`,
-                    },
-                  ],
-                  storedRefs[`passagesInputViewRef`].current
-                );
-                const eventTyped = (event as unknown) as React.ChangeEvent<HTMLButtonElement>;
-                const parentNodeRetrieved = (eventTyped[`currentTarget`][
-                  `parentNode`
-                ] as unknown) as HTMLDivElement;
-                const inputsContainerRetrieved = (parentNodeRetrieved[
-                  `childNodes`
-                ][1][`childNodes`] as unknown) as Array<HTMLDivElement>;
-
-                handleCurrentMediaInputsSelectedStyle(
-                  inputsContainerRetrieved,
-                  id
-                );
-                setMediaDataIds((previousMediaDataIds: any) => {
-                  return {
-                    ...previousMediaDataIds,
-                    [`current`]: {
-                      ...previousMediaDataIds[`current`],
-                      [`passage`]: id,
-                    },
-                  };
-                });
-                setFormPreviewData((previousFormPreviewData) => {
-                  return {
-                    ...previousFormPreviewData,
-                    current: {
-                      type: `passage`,
-                      data: formikConf[`values`][`passages`][id],
-                    },
-                  };
-                });
-              }}
-            >{`Add Passage`}</button>
-            <div
-              ref={storedRefs[`passagesInputViewRef`]}
-              className={styles.innerFormSectionInputs}
-            ></div>
-          </div>
+                    });
+                  }}
+                >{`${values.addButtonText}`}</button>
+                <div
+                  ref={storedRefs[`${values.mediaType}sInputViewRef`]}
+                  className={styles.innerFormSectionInputs}
+                ></div>
+              </div>
+            );
+          })}
         </div>
       </form>
     </div>
@@ -1724,6 +1506,8 @@ const FormConfiguration: React.FC<FormConfigurationInterface> = ({
 };
 
 const API: React.FC = () => {
+  // Deconstruct from useAuth0
+  const { isAuthenticated } = useAuth0();
   // Handle screen size detection and changes
   const [screenHeight, setScreenHeight] = React.useState(() => {
     let fetchedScreenHeight = Dimensions.get("window").height;
@@ -1751,7 +1535,7 @@ const API: React.FC = () => {
       ...styles,
       mainDisplaySupportStyle: {
         ...styles.mainDisplaySupportStyle,
-        height: `${screenHeight}px`,
+        height: `${Dimensions[`get`](`window`)[`height`]}px`,
       },
       innerFormDisplaySupport: {
         ...styles.innerFormDisplaySupport,
@@ -1762,24 +1546,23 @@ const API: React.FC = () => {
           formPreviewData[`current`][`type`] === `reCheck`
             ? 0
             : 2,
-        width:
+        height:
           formPreviewData[`current`][`type`] === `allNewData` ||
           formPreviewData[`current`][`type`] === `apiFrontPage` ||
           formPreviewData[`current`][`type`] === `viewExistingProject` ||
           formPreviewData[`current`][`type`] === `reCheck`
-            ? 0
-            : screenWidth / 3,
-        maxHeight: screenHeight,
+            ? `0%`
+            : `${(screenHeight / 100) * 15 - 2}px`,
       },
       outterMediaPreviewDisplaySupport: {
         ...styles.outterMediaPreviewDisplaySupport,
-        width:
+        height:
           formPreviewData[`current`][`type`] === `allNewData` ||
           formPreviewData[`current`][`type`] === `apiFrontPage` ||
           formPreviewData[`current`][`type`] === `viewExistingProject` ||
           formPreviewData[`current`][`type`] === `reCheck`
-            ? `100%`
-            : `${(screenWidth / 3) * 2}px`,
+            ? `${(Dimensions[`get`](`window`)[`height`] / 100) * 95}px`
+            : `${(screenHeight / 100) * 80}px`,
       },
     };
     setStyles(updatedHeightConfig);
@@ -1794,19 +1577,24 @@ const API: React.FC = () => {
         width: `100%`,
         height: `${screenHeight}px`,
       },
+      [`headerBarForAPI`]: `headerBarForAPI`,
+      [`headerBarForAPISupport`]: {
+        [`height`]: `${(screenHeight / 100) * 5}px`,
+      },
       formEmbedder: `formEmbedder`,
       innerFormMainDisplay: `innerFormMainDisplay`,
       innerFormDisplaySupport: {
         borderWidth: 0,
-        width: 0,
-        height: "auto",
-        maxHeight: Dimensions.get("window").height,
+        width: `100%`,
+        height: `0%`,
       },
+      [`formOptionsContainer`]: `formOptionsContainer`,
       innerFormSectionContainer: `innerFormSectionContainer`,
       innerFormSectionInputs: `innerFormSectionInputs`,
       innerFormAddInputButton: `innerFormAddInputButton`,
       innerFormSubmitButton: `innerFormSubmitButton`,
       formDataInputsHeader: `formDataInputsHeader`,
+      [`formOptionsInitialInputs`]: `formOptionsInitialInputs`,
       extraHeaderOptionFreshFormBackToApiFrontPageButton: `extraHeaderOptionFreshFormBackToApiFrontPageButton`,
       extraHeaderOptionFetchedProjectDataBackToFullPreviewPageButton: `extraHeaderOptionFetchedProjectDataBackToFullPreviewPageButton`,
       anIdeaTitle: `anIdeaTitle`,
@@ -1816,7 +1604,7 @@ const API: React.FC = () => {
       outterMediaPreviewDisplay: `outterMediaPreviewDisplay`,
       outterMediaPreviewDisplaySupport: {
         width: `100%`,
-        height: `auto`,
+        height: `${(Dimensions[`get`](`window`)[`height`] / 100) * 95}px`,
       },
       innerMediaPreviewDisplay: `innerMediaPreviewDisplay`,
       previewDisplayImage: `previewDisplayImage`,
@@ -1860,6 +1648,12 @@ const API: React.FC = () => {
     };
   });
 
+  // Declare variable holding authorization status
+  const [authorizationStatus, setAuthorizationStatus] = React.useState(() => ({
+    [`authorizedId`]: ``,
+    [`personalAccess`]: ``,
+  }));
+
   // Declare variable holding initial form values
   const [
     initialFormValues,
@@ -1879,7 +1673,6 @@ const API: React.FC = () => {
   const [mediaDataIds, setMediaDataIds] = React.useState<{
     current: {
       video: string | number;
-      muralPhoto: string | number;
       galleryPhoto: string | number;
       passage: string | number;
       fetchedProject?: {
@@ -1892,7 +1685,6 @@ const API: React.FC = () => {
     return {
       current: {
         video: ``,
-        muralPhoto: ``,
         galleryPhoto: ``,
         passage: ``,
       },
@@ -1924,115 +1716,6 @@ const API: React.FC = () => {
             createNewIdea();
           }}
         >{`CREATE NEW IDEA`}</div>
-        <div
-          className={styles.browseIdeasForEditButton}
-          onClick={async () => {
-            let forStorage = { gallery: {}, passages: {} };
-            let allVideosData = {};
-            let allGalleryData = {};
-            let allJournalData = {};
-            let consolidatedData = {};
-            let dataBaseProjectIds: Array<string> = [];
-            let configuredId = { id: ``, index: -1 };
-
-            const handleRetrievalOfProjectData = async () => {
-              const allCurrentDatabaseProjectsIds = await retrieveAllProjectsIds();
-              const retrievedProjectData = projectDataFetch(
-                allCurrentDatabaseProjectsIds[0]
-              );
-              dataBaseProjectIds = allCurrentDatabaseProjectsIds;
-              return retrievedProjectData;
-            };
-            const fetchedProjectData = await handleRetrievalOfProjectData();
-            const retrievedFullData =
-              fetchedProjectData[`projectData`][`fullData`];
-            retrievedFullData[`motionPictures`][`forEach`]((data) => {
-              allVideosData = {
-                ...allVideosData,
-                [`videoData-${data._id}`]: {
-                  id: data._id,
-                  name: data.videoName,
-                  type: data.videoType,
-                  url: data.videoUrl,
-                },
-              };
-            });
-            retrievedFullData[`majorCatalogPhotos`][`forEach`]((data) => {
-              forStorage = {
-                ...forStorage,
-                [`gallery`]: {
-                  ...forStorage[`gallery`],
-                  [`galleryPhotoData-${data._id}`]: {
-                    url: `${dataBaseUrl}photos/${data.photoFilename}`,
-                  },
-                },
-              };
-              allGalleryData = {
-                ...allGalleryData,
-                [`galleryPhotoData-${data._id}`]: {
-                  id: data._id,
-                  title: data.photoTitle,
-                  references: data.photoReferences,
-                  photo: `${dataBaseUrl}photos/${data.photoFilename}`,
-                },
-              };
-            });
-            retrievedFullData[`journal`][`forEach`]((data) => {
-              forStorage = {
-                ...forStorage,
-                [`passages`]: {
-                  ...forStorage[`passages`],
-                  [`passageData-${data._id}`]: { content: data[`content`] },
-                },
-              };
-              allJournalData = {
-                ...allJournalData,
-                [`passageData-${data._id}`]: {
-                  id: data._id,
-                  title: data.title,
-                  whatIsIt: data.whatIsIt,
-                  content: data.content,
-                  references: data.references.web,
-                },
-              };
-            });
-            consolidatedData = {
-              ...consolidatedData,
-              [`test`]: { [`title`]: retrievedFullData[`ideaTitle`] },
-              [`videos`]: allVideosData,
-              [`galleryPhotos`]: allGalleryData,
-              [`passages`]: allJournalData,
-            };
-            configuredId = { [`id`]: retrievedFullData[`_id`], [`index`]: 0 };
-            setMediaDataIds((previousMediaDataIds) => {
-              return {
-                ...previousMediaDataIds,
-                [`dataBaseProjectIds`]: dataBaseProjectIds,
-                [`current`]: {
-                  ...previousMediaDataIds[`current`],
-                  [`fetchedProject`]: configuredId,
-                },
-              };
-            });
-            setFormPreviewData((previousFormPreviewData) => {
-              return {
-                ...previousFormPreviewData,
-                [`stored`]: forStorage,
-                [`current`]: {
-                  [`type`]: `viewExistingProject`,
-                  [`data`]: consolidatedData,
-                },
-              };
-            });
-            console.log({ fetchedProjectData, consolidatedData, configuredId });
-          }}
-        >{`BROWSE IDEAS TO EDIT`}</div>
-        <div
-          className={styles.toMainProjectsPageButton}
-          onClick={() => {
-            window.location.href = `${localUrl}project`;
-          }}
-        >{`MAIN PROJECTS PAGE`}</div>
       </div>
     );
   });
@@ -2065,8 +1748,6 @@ const API: React.FC = () => {
     innerFormDisplayRef: React.useRef<any>(),
     videosInputViewRef: React.useRef<any>(),
     videosMiniForm: React.useRef(),
-    muralPhotosInputViewRef: React.useRef<any>(),
-    muralPhotosMiniForm: React.useRef(),
     galleryPhotosInputViewRef: React.useRef<any>(),
     galleryPhotosMiniForm: React.useRef(),
     passagesInputViewRef: React.useRef<any>(),
@@ -2085,13 +1766,12 @@ const API: React.FC = () => {
         ...previousStyles,
         innerFormDisplaySupport: {
           ...previousStyles.innerFormDisplaySupport,
+          height: `${(screenHeight / 100) * 15 - 2}px`,
           borderWidth: 2,
-          width: screenWidth / 3,
-          maxHeight: screenHeight,
         },
         outterMediaPreviewDisplaySupport: {
           ...previousStyles.outterMediaPreviewDisplaySupport,
-          width: `${(screenWidth / 3) * 2}px`,
+          height: `${(screenHeight / 100) * 80}px`,
         },
       };
     });
@@ -2435,12 +2115,46 @@ const API: React.FC = () => {
           body: ideaTitleForBody,
         })
           .then((res) => {
-            const jsonParsed = res.json();
+            const jsonParsed = res[`json`]();
             return jsonParsed;
           })
           .then((data) => {
-            return data._id;
+            return data[`_id`];
           });
+
+    // Handle adding new idea id to user's authorized data access
+    console[`log`]({
+      authorizationStatusCheckForAddingProject: authorizationStatus,
+    });
+    if (
+      !(
+        mediaDataIds[`dataBaseProjectIds`] &&
+        mediaDataIds[`dataBaseProjectIds`][`find`](
+          (dataBaseProjectId) =>
+            mediaDataIds[`current`][`fetchedProject`] &&
+            dataBaseProjectId ===
+              mediaDataIds[`current`][`fetchedProject`][`id`]
+        )
+      )
+    ) {
+      const addingToUsersAuthorizedDataAccesss = await fetch(
+        `${userBaseUrl}updateDataAccess/${
+          authorizationStatus[`authorizedId`]
+        }/webApp/AnIdea/operationMode/add`,
+        {
+          method: `PUT`,
+          mode: `cors`,
+          cache: `no-cache`,
+          // credentials: `same-origin`,
+          headers: { [`Content-Type`]: `application/json` },
+          body: JSON[`stringify`]({ [`projectId`]: updatingDataBaseP1Id }),
+        }
+      )[`then`]((res) => {
+        const json = res[`json`]();
+        return json;
+      });
+      console[`log`]({ addingToUsersAuthorizedDataAccesss });
+    }
 
     // Handle updated title upload
     if (
@@ -2535,14 +2249,72 @@ const API: React.FC = () => {
           retrievedGalleryFormInputs[u][`childNodes`][2][`childNodes`][0][
             `childNodes`
           ][2][`files`][0];
+        console[`log`]({ retrievedPhotoFileData });
+        if (retrievedPhotoFileData) {
+          if (retrievedPhotoFileData[`type`] === `image/jpeg`) {
+            if (
+              retrievedPhotoFileData[`name`][`includes`](`jpg`) &&
+              !isNaN(
+                Number(retrievedPhotoFileData[`name`][`replace`](`.jpg`, ``))
+              )
+            ) {
+              const blobHold = retrievedPhotoFileData[`slice`](
+                0,
+                retrievedPhotoFileData[`size`],
+                `image/jpeg`
+              );
+              retrievedPhotoFileData = new File(
+                [blobHold],
+                `nativeImage-${v4()}.jpg`,
+                { [`type`]: `image/jpeg` }
+              );
+            } else if (
+              retrievedPhotoFileData[`name`][`includes`](`jpeg`) &&
+              !isNaN(
+                Number(retrievedPhotoFileData[`name`][`replace`](`.jpeg`, ``))
+              )
+            ) {
+              const blobHold = retrievedPhotoFileData[`slice`](
+                0,
+                retrievedPhotoFileData[`size`],
+                `image/jpeg`
+              );
+              retrievedPhotoFileData = new File(
+                [blobHold],
+                `nativeImage-${v4()}.jpeg`,
+                { [`type`]: `image/jpeg` }
+              );
+            }
+          } else if (retrievedPhotoFileData[`type`] === `image/png`) {
+            if (
+              retrievedPhotoFileData[`name`][`includes`](`png`) &&
+              !isNaN(
+                Number(retrievedPhotoFileData[`name`][`replace`](`.png`, ``))
+              )
+            ) {
+              const blobHold = retrievedPhotoFileData[`slice`](
+                0,
+                retrievedPhotoFileData[`size`],
+                `image/png`
+              );
+              retrievedPhotoFileData = new File(
+                [blobHold],
+                `nativeImage-${v4()}.png`,
+                { [`type`]: `image/png` }
+              );
+            }
+          }
+        }
         let retrievedPhotoPreviewData =
           galleryFormPreviewData[`${retrievedGalleryFormInputs[u][`id`]}`];
-        console.log({ retrievedPhotoPreviewData, retrievedStoreDataForPhoto });
+        console.log({
+          retrievedPhotoFileData,
+          retrievedPhotoPreviewData,
+          retrievedStoreDataForPhoto,
+        });
         if (IdeaId) {
           if (
-            retrievedPhotoPreviewData[`photo`][`includes`](
-              `blob:http://localhost:3000`
-            ) ||
+            retrievedPhotoPreviewData[`photo`][`includes`](`blob`) ||
             retrievedPhotoPreviewData[`title`] !==
               retrievedStoreDataForPhoto?.title ||
             retrievedPhotoPreviewData[`filename`] !==
@@ -2557,12 +2329,14 @@ const API: React.FC = () => {
               [`title`]: retrievedPhotoPreviewData[`title`],
               [`references`]: retrievedPhotoPreviewData[`references`],
               [`filename`]: retrievedPhotoPreviewData[`photo`][`includes`](
-                `blob:http://localhost:3000`
+                `blob`
               )
                 ? undefined
                 : conditionalFilenameConfig,
             };
-            galleryFormData[`append`](`photos`, retrievedPhotoFileData);
+            if (retrievedPhotoFileData) {
+              galleryFormData[`append`](`photos`, retrievedPhotoFileData);
+            }
             galleryDataHold[`push`](photoDataConfigured);
           }
         } else {
@@ -2578,13 +2352,18 @@ const API: React.FC = () => {
       // Handle Checking of deleted photos
       let deletedPhotosIds: Array<string> = [];
       for (let c = 0; c < retrievedStoreDataForGallery.length; c++) {
-        let verifiedPhotoForGallery = Object.values(
-          galleryFormPreviewData
-        ).some(
-          (data: any) => data.id === retrievedStoreDataForGallery[c][`id`]
+        let verifiedPhotoForGallery = Object.keys(galleryFormPreviewData).find(
+          (dataId: any) =>
+            dataId[`replace`](`galleryPhotoData-`, ``) ===
+            retrievedStoreDataForGallery[c][`id`]
         );
 
-        if (!verifiedPhotoForGallery) {
+        if (
+          !verifiedPhotoForGallery &&
+          retrievedStoreDataForGallery[c] &&
+          retrievedStoreDataForGallery[c][`id`] &&
+          retrievedStoreDataForGallery[c][`id`] !== ``
+        ) {
           deletedPhotosIds[`push`](retrievedStoreDataForGallery[c][`id`]);
         }
 
@@ -2605,7 +2384,11 @@ const API: React.FC = () => {
         ? JSON[`stringify`](dataForMutation)
         : JSON[`stringify`](galleryDataHold);
       galleryFormData[`append`](`photosData`, stringifiedGalleryData);
-
+      console[`log`]({
+        galleryFormPhotos: galleryFormData[`getAll`](`photos`),
+        galleryFormData: galleryFormData[`getAll`](`photosData`),
+      });
+      console[`log`](`heading towards gallery upload route`);
       const updatingDataBaseP2Gallery = await fetch(
         `${dataBaseUrl}${updatingDataBaseP1Id}/${
           IdeaId ? `full-mutation` : `add`
@@ -2618,7 +2401,9 @@ const API: React.FC = () => {
           body: galleryFormData,
         }
       ).then((res) => {
-        return res.json();
+        const json = res.json();
+        console[`log`]({ res, jsonForGalleryUpload: json });
+        return json;
       });
       console.log({
         galleryInputsCheckP2: galleryDataHold,
@@ -2754,11 +2539,11 @@ const API: React.FC = () => {
         innerFormDisplaySupport: {
           ...styles[`innerFormDisplaySupport`],
           borderWidth: 0,
-          width: 0,
+          height: `0%`,
         },
         outterMediaPreviewDisplaySupport: {
           ...styles[`outterMediaPreviewDisplaySupport`],
-          width: `100%`,
+          height: `${(Dimensions[`get`](`window`)[`height`] / 100) * 95}px`,
         },
       };
     });
@@ -2779,129 +2564,137 @@ const API: React.FC = () => {
               createNewIdea();
             }}
           >{`CREATE NEW IDEA`}</div>
-          <div
-            className={styles.browseIdeasForEditButton}
-            onClick={async () => {
-              removeAllChildNodes(storedRefs[`videosInputViewRef`][`current`]);
-              removeAllChildNodes(
-                storedRefs[`galleryPhotosInputViewRef`][`current`]
-              );
-              removeAllChildNodes(
-                storedRefs[`passagesInputViewRef`][`current`]
-              );
-              let forStorage = { gallery: {}, passages: {} };
-              let allVideosData = {};
-              let allGalleryData = {};
-              let allJournalData = {};
-              let consolidatedData = {};
-              let dataBaseProjectIds: Array<string> = [];
-              let configuredId = { id: ``, index: -1 };
-
-              const handleRetrievalOfProjectData = async () => {
-                const allCurrentDatabaseProjectsIds = await retrieveAllProjectsIds();
-                const retrievedProjectData = projectDataFetch(
-                  allCurrentDatabaseProjectsIds[0]
+          {isAuthenticated ? (
+            <div
+              className={styles.browseIdeasForEditButton}
+              onClick={async () => {
+                console[`log`](
+                  `clicking for browsing of personal database projects`
                 );
-                dataBaseProjectIds = allCurrentDatabaseProjectsIds;
-                return retrievedProjectData;
-              };
-              const fetchedProjectData = await handleRetrievalOfProjectData();
-              const retrievedFullData =
-                fetchedProjectData[`projectData`][`fullData`];
-              retrievedFullData[`motionPictures`][`forEach`]((data) => {
-                allVideosData = {
-                  ...allVideosData,
-                  [`videoData-${data._id}`]: {
-                    id: data._id,
-                    name: data.videoName,
-                    type: data.videoType,
-                    url: data.videoUrl,
-                  },
+                removeAllChildNodes(
+                  storedRefs[`videosInputViewRef`][`current`]
+                );
+                removeAllChildNodes(
+                  storedRefs[`galleryPhotosInputViewRef`][`current`]
+                );
+                removeAllChildNodes(
+                  storedRefs[`passagesInputViewRef`][`current`]
+                );
+                let forStorage = { gallery: {}, passages: {} };
+                let allVideosData = {};
+                let allGalleryData = {};
+                let allJournalData = {};
+                let consolidatedData = {};
+                let dataBaseProjectIds: Array<string> = [];
+                let configuredId = { id: ``, index: -1 };
+
+                const handleRetrievalOfProjectData = async () => {
+                  const allCurrentDatabaseProjectsIds = await retrieveAllProjectsIds(
+                    {
+                      [`userId`]: authorizationStatus[`authorizedId`],
+                      [`accessPower`]: authorizationStatus[`personalAccess`],
+                    }
+                  );
+                  const retrievedProjectData = projectDataFetch(
+                    allCurrentDatabaseProjectsIds[0]
+                  );
+                  dataBaseProjectIds = allCurrentDatabaseProjectsIds;
+                  return retrievedProjectData;
                 };
-              });
-              retrievedFullData[`majorCatalogPhotos`][`forEach`]((data) => {
-                forStorage = {
-                  ...forStorage,
-                  [`gallery`]: {
-                    ...forStorage[`gallery`],
-                    [`galleryPhotoData-${data._id}`]: {
-                      url: `${dataBaseUrl}photos/${data.photoFilename}`,
+                const fetchedProjectData = await handleRetrievalOfProjectData();
+                const retrievedFullData =
+                  fetchedProjectData[`projectData`][`fullData`];
+                retrievedFullData[`motionPictures`][`forEach`]((data) => {
+                  allVideosData = {
+                    ...allVideosData,
+                    [`videoData-${data._id}`]: {
+                      id: data._id,
+                      name: data.videoName,
+                      type: data.videoType,
+                      url: data.videoUrl,
                     },
-                  },
+                  };
+                });
+                retrievedFullData[`majorCatalogPhotos`][`forEach`]((data) => {
+                  forStorage = {
+                    ...forStorage,
+                    [`gallery`]: {
+                      ...forStorage[`gallery`],
+                      [`galleryPhotoData-${data._id}`]: {
+                        url: `${dataBaseUrl}photos/${data.photoFilename}`,
+                      },
+                    },
+                  };
+                  allGalleryData = {
+                    ...allGalleryData,
+                    [`galleryPhotoData-${data._id}`]: {
+                      id: data._id,
+                      title: data.photoTitle,
+                      references: data.photoReferences,
+                      photo: `${dataBaseUrl}photos/${data.photoFilename}`,
+                    },
+                  };
+                });
+                retrievedFullData[`journal`][`forEach`]((data) => {
+                  forStorage = {
+                    ...forStorage,
+                    [`passages`]: {
+                      ...forStorage[`passages`],
+                      [`passageData-${data._id}`]: { content: data[`content`] },
+                    },
+                  };
+                  allJournalData = {
+                    ...allJournalData,
+                    [`passageData-${data._id}`]: {
+                      id: data._id,
+                      title: data.title,
+                      whatIsIt: data.whatIsIt,
+                      content: data.content,
+                      references: data.references.web,
+                    },
+                  };
+                });
+                consolidatedData = {
+                  ...consolidatedData,
+                  [`test`]: { [`title`]: retrievedFullData[`ideaTitle`] },
+                  [`videos`]: allVideosData,
+                  [`galleryPhotos`]: allGalleryData,
+                  [`passages`]: allJournalData,
                 };
-                allGalleryData = {
-                  ...allGalleryData,
-                  [`galleryPhotoData-${data._id}`]: {
-                    id: data._id,
-                    title: data.photoTitle,
-                    references: data.photoReferences,
-                    photo: `${dataBaseUrl}photos/${data.photoFilename}`,
-                  },
+                configuredId = {
+                  [`id`]: retrievedFullData[`_id`],
+                  [`index`]: 0,
                 };
-              });
-              retrievedFullData[`journal`][`forEach`]((data) => {
-                forStorage = {
-                  ...forStorage,
-                  [`passages`]: {
-                    ...forStorage[`passages`],
-                    [`passageData-${data._id}`]: { content: data[`content`] },
-                  },
-                };
-                allJournalData = {
-                  ...allJournalData,
-                  [`passageData-${data._id}`]: {
-                    id: data._id,
-                    title: data.title,
-                    whatIsIt: data.whatIsIt,
-                    content: data.content,
-                    references: data.references.web,
-                  },
-                };
-              });
-              consolidatedData = {
-                ...consolidatedData,
-                [`test`]: { [`title`]: retrievedFullData[`ideaTitle`] },
-                [`videos`]: allVideosData,
-                [`galleryPhotos`]: allGalleryData,
-                [`passages`]: allJournalData,
-              };
-              configuredId = {
-                [`id`]: retrievedFullData[`_id`],
-                [`index`]: 0,
-              };
-              setMediaDataIds((previousMediaDataIds) => {
-                return {
-                  ...previousMediaDataIds,
-                  [`dataBaseProjectIds`]: dataBaseProjectIds,
-                  [`current`]: {
-                    ...previousMediaDataIds[`current`],
-                    [`fetchedProject`]: configuredId,
-                  },
-                };
-              });
-              setFormPreviewData((previousFormPreviewData) => {
-                return {
-                  ...previousFormPreviewData,
-                  [`stored`]: forStorage,
-                  [`current`]: {
-                    [`type`]: `viewExistingProject`,
-                    [`data`]: consolidatedData,
-                  },
-                };
-              });
-              console.log({
-                fetchedProjectData,
-                consolidatedData,
-                configuredId,
-              });
-            }}
-          >{`BROWSE IDEAS TO EDIT`}</div>
-          <div
-            className={styles.toMainProjectsPageButton}
-            onClick={() => {
-              window.location.href = `${localUrl}project`;
-            }}
-          >{`MAIN PROJECTS PAGE`}</div>
+                setMediaDataIds((previousMediaDataIds) => {
+                  return {
+                    ...previousMediaDataIds,
+                    [`dataBaseProjectIds`]: dataBaseProjectIds,
+                    [`current`]: {
+                      ...previousMediaDataIds[`current`],
+                      [`fetchedProject`]: configuredId,
+                    },
+                  };
+                });
+                setFormPreviewData((previousFormPreviewData) => {
+                  return {
+                    ...previousFormPreviewData,
+                    [`stored`]: forStorage,
+                    [`current`]: {
+                      [`type`]: `viewExistingProject`,
+                      [`data`]: consolidatedData,
+                    },
+                  };
+                });
+                console.log({
+                  fetchedProjectData,
+                  consolidatedData,
+                  configuredId,
+                });
+              }}
+            >{`BROWSE IDEAS TO EDIT`}</div>
+          ) : (
+            <></>
+          )}
         </div>
       );
     });
@@ -2924,8 +2717,154 @@ const API: React.FC = () => {
 
   // Handle update of preview display
   React.useEffect(() => {
-    console.log({ formPreviewData, mediaDataIds });
-    if (formPreviewData[`current`][`type`] === `video`) {
+    console.log({ formPreviewData, mediaDataIds, authorizationStatus });
+    if (
+      isAuthenticated &&
+      formPreviewData[`current`][`type`] === `apiFrontPage`
+    ) {
+      setFormPreviewDisplay((prevFormPreviewDisplay) => {
+        return (
+          <div className={styles.apiFrontPage}>
+            <div
+              className={styles.createNewIdeaButton}
+              onClick={() => {
+                createNewIdea();
+              }}
+            >{`CREATE NEW IDEA`}</div>
+            <div
+              className={styles.browseIdeasForEditButton}
+              onClick={async (event) => {
+                event[`persist`]();
+                const eventTyped = (event as unknown) as React.ChangeEvent<HTMLDivElement>;
+                console[`log`]({ event });
+                console[`log`](`fetching projects for user`);
+                let forStorage = { gallery: {}, passages: {} };
+                let allVideosData = {};
+                let allGalleryData = {};
+                let allJournalData = {};
+                let consolidatedData = {};
+                let dataBaseProjectIds: Array<string> = [];
+                let configuredId = { id: ``, index: -1 };
+
+                console[`log`]({ authorizationStatus });
+                const allCurrentDatabaseProjectsIds = await retrieveAllProjectsIds(
+                  {
+                    [`userId`]: authorizationStatus[`authorizedId`],
+                    [`accessPower`]: authorizationStatus[`personalAccess`],
+                  }
+                );
+                console[`log`]({ allCurrentDatabaseProjectsIds });
+                if (
+                  allCurrentDatabaseProjectsIds &&
+                  allCurrentDatabaseProjectsIds[`length`] > 0
+                ) {
+                  const handleRetrievalOfProjectData = async () => {
+                    const retrievedProjectData = projectDataFetch(
+                      allCurrentDatabaseProjectsIds[0]
+                    );
+                    dataBaseProjectIds = allCurrentDatabaseProjectsIds;
+                    return retrievedProjectData;
+                  };
+                  const fetchedProjectData = await handleRetrievalOfProjectData();
+                  const retrievedFullData =
+                    fetchedProjectData[`projectData`][`fullData`];
+                  retrievedFullData[`motionPictures`][`forEach`]((data) => {
+                    allVideosData = {
+                      ...allVideosData,
+                      [`videoData-${data._id}`]: {
+                        id: data._id,
+                        name: data.videoName,
+                        type: data.videoType,
+                        url: data.videoUrl,
+                      },
+                    };
+                  });
+                  retrievedFullData[`majorCatalogPhotos`][`forEach`]((data) => {
+                    forStorage = {
+                      ...forStorage,
+                      [`gallery`]: {
+                        ...forStorage[`gallery`],
+                        [`galleryPhotoData-${data._id}`]: {
+                          url: `${dataBaseUrl}photos/${data.photoFilename}`,
+                        },
+                      },
+                    };
+                    allGalleryData = {
+                      ...allGalleryData,
+                      [`galleryPhotoData-${data._id}`]: {
+                        id: data._id,
+                        title: data.photoTitle,
+                        references: data.photoReferences,
+                        photo: `${dataBaseUrl}photos/${data.photoFilename}`,
+                      },
+                    };
+                  });
+                  retrievedFullData[`journal`][`forEach`]((data) => {
+                    forStorage = {
+                      ...forStorage,
+                      [`passages`]: {
+                        ...forStorage[`passages`],
+                        [`passageData-${data._id}`]: {
+                          content: data[`content`],
+                        },
+                      },
+                    };
+                    allJournalData = {
+                      ...allJournalData,
+                      [`passageData-${data._id}`]: {
+                        id: data._id,
+                        title: data.title,
+                        whatIsIt: data.whatIsIt,
+                        content: data.content,
+                        references: data.references.web,
+                      },
+                    };
+                  });
+                  consolidatedData = {
+                    ...consolidatedData,
+                    [`test`]: { [`title`]: retrievedFullData[`ideaTitle`] },
+                    [`videos`]: allVideosData,
+                    [`galleryPhotos`]: allGalleryData,
+                    [`passages`]: allJournalData,
+                  };
+                  configuredId = {
+                    [`id`]: retrievedFullData[`_id`],
+                    [`index`]: 0,
+                  };
+                  setMediaDataIds((previousMediaDataIds) => {
+                    return {
+                      ...previousMediaDataIds,
+                      [`dataBaseProjectIds`]: dataBaseProjectIds,
+                      [`current`]: {
+                        ...previousMediaDataIds[`current`],
+                        [`fetchedProject`]: configuredId,
+                      },
+                    };
+                  });
+                  setFormPreviewData((previousFormPreviewData) => {
+                    return {
+                      ...previousFormPreviewData,
+                      [`stored`]: forStorage,
+                      [`current`]: {
+                        [`type`]: `viewExistingProject`,
+                        [`data`]: consolidatedData,
+                      },
+                    };
+                  });
+                  console.log({
+                    fetchedProjectData,
+                    consolidatedData,
+                    configuredId,
+                  });
+                } else {
+                  eventTyped[`target`][`innerHTML`] = `NO PROJECTS FOR EDITING`;
+                }
+              }}
+            >{`BROWSE IDEAS TO EDIT`}</div>
+          </div>
+        );
+      });
+    } else if (formPreviewData[`current`][`type`] === `video`) {
       setFormPreviewDisplay(() => {
         return (
           <div className={styles.innerMediaPreviewDisplay}>
@@ -3012,7 +2951,7 @@ const API: React.FC = () => {
             setDataForForm((previousDataForForm) => {
               return {
                 ...previousDataForForm,
-                forId: mediaDataIds[`current`][`passage`],
+                forId: `forStorage-${mediaDataIds[`current`][`passage`]}`,
                 forInput: `content`,
                 inputValue: retrievedText,
               };
@@ -3090,10 +3029,12 @@ const API: React.FC = () => {
                   event.currentTarget.style.borderColor = `gainsboro`;
                   event.currentTarget.style.backgroundColor = `maroon`;
                   setTimeout(() => {
-                    destroyProjectButtonRef.current.innerHTML = `DESTROY PROJECT`;
-                    destroyProjectButtonRef.current.style.color = ``;
-                    destroyProjectButtonRef.current.style.borderColor = ``;
-                    destroyProjectButtonRef.current.style.backgroundColor = ``;
+                    if (destroyProjectButtonRef[`current`]) {
+                      destroyProjectButtonRef.current.innerHTML = `DESTROY PROJECT`;
+                      destroyProjectButtonRef.current.style.color = ``;
+                      destroyProjectButtonRef.current.style.borderColor = ``;
+                      destroyProjectButtonRef.current.style.backgroundColor = ``;
+                    }
                   }, 10000);
                 } else if (innerHtml === `ARE YOU CERTAIN?`) {
                   console.log({
@@ -3109,11 +3050,27 @@ const API: React.FC = () => {
                       cache: `no-cache`,
                     }
                   );
+                  await fetch(
+                    `${userBaseUrl}updateDataAccess/${
+                      authorizationStatus[`authorizedId`]
+                    }/webApp/AnIdea/operationMode/remove`,
+                    {
+                      method: `PUT`,
+                      mode: `cors`,
+                      cache: `no-cache`,
+                      // credentials: `same-origin`,
+                      headers: { [`Content-Type`]: `application/json` },
+                      body: JSON[`stringify`]({
+                        [`projectId`]: mediaDataIds[`current`][`fetchedProject`]
+                          ?.id,
+                      }),
+                    }
+                  );
                   setMediaDataIds((previousMediaDataIds) => {
                     let copyOfIds = { ...previousMediaDataIds };
-                    let copyOfDatabaseIds = [
-                      ...copyOfIds[`dataBaseProjectIds`],
-                    ];
+                    let copyOfDatabaseIds = copyOfIds[`dataBaseProjectIds`]
+                      ? [...copyOfIds[`dataBaseProjectIds`]]
+                      : [];
                     let indexOfdeletedId = copyOfDatabaseIds.findIndex(
                       (id) =>
                         mediaDataIds[`current`][`fetchedProject`]?.id === id
@@ -3138,9 +3095,27 @@ const API: React.FC = () => {
                       copyOfDatabaseIds,
                       indexOfdeletedId,
                     });
-                    retrievePreviousFetchedProject(true, copyOfIds);
+                    if (copyOfDatabaseIds[`length`] > 0) {
+                      retrievePreviousFetchedProject(true, copyOfIds);
+                    } else {
+                      setFormPreviewData((prevFormPreviewData) => {
+                        return {
+                          ...prevFormPreviewData,
+                          [`current`]: {
+                            ...prevFormPreviewData[`current`],
+                            [`type`]: `apiFrontPage`,
+                          },
+                        };
+                      });
+                    }
                     return copyOfIds;
                   });
+                  if (destroyProjectButtonRef[`current`]) {
+                    destroyProjectButtonRef.current.innerHTML = `DESTROY PROJECT`;
+                    destroyProjectButtonRef.current.style.color = ``;
+                    destroyProjectButtonRef.current.style.borderColor = ``;
+                    destroyProjectButtonRef.current.style.backgroundColor = ``;
+                  }
                 }
               }}
             >{`DESTROY PROJECT`}</div>
@@ -3171,12 +3146,12 @@ const API: React.FC = () => {
                     ...previousStyles,
                     [`innerFormDisplaySupport`]: {
                       ...previousStyles[`innerFormDisplaySupport`],
+                      height: `${(screenHeight / 100) * 15 - 2}px`,
                       borderWidth: 2,
-                      width: screenWidth / 3,
                     },
                     [`outterMediaPreviewDisplaySupport`]: {
                       ...previousStyles[`outterMediaPreviewDisplaySupport`],
-                      width: `${(screenWidth / 3) * 2}px`,
+                      height: `${(screenHeight / 100) * 80}px`,
                     },
                   };
                 });
@@ -3192,7 +3167,17 @@ const API: React.FC = () => {
                     : false
                 );
               }}
-            >{`UPLOAD NEW IDEA TO DATABASE`}</div>
+            >
+              {mediaDataIds[`dataBaseProjectIds`] &&
+              mediaDataIds[`dataBaseProjectIds`][`find`](
+                (dataBaseProjectId) =>
+                  mediaDataIds[`current`][`fetchedProject`] &&
+                  dataBaseProjectId ===
+                    mediaDataIds[`current`][`fetchedProject`][`id`]
+              )
+                ? `UPDATE IDEA TO DATABASE`
+                : `UPLOAD NEW IDEA TO DATABASE`}
+            </div>
           </div>
         );
 
@@ -3445,14 +3430,12 @@ const API: React.FC = () => {
           ...styles,
           innerFormDisplaySupport: {
             ...styles[`innerFormDisplaySupport`],
+            height: `0px`,
             borderWidth: 0,
-            width: 0,
-            height: `0%`,
           },
           outterMediaPreviewDisplaySupport: {
             ...styles[`outterMediaPreviewDisplaySupport`],
-            width: `100%`,
-            height: `100%`,
+            height: `${(Dimensions[`get`](`window`)[`height`] / 100) * 95}px`,
           },
         };
       });
@@ -3467,12 +3450,12 @@ const API: React.FC = () => {
           ...previousStyles,
           innerFormDisplaySupport: {
             ...previousStyles[`innerFormDisplaySupport`],
+            height: `${(screenHeight / 100) * 15 - 2}px`,
             borderWidth: 2,
-            width: screenWidth / 3,
           },
           outterMediaPreviewDisplaySupport: {
             ...previousStyles[`outterMediaPreviewDisplaySupport`],
-            width: `${(screenWidth / 3) * 2}px`,
+            height: `${(screenHeight / 100) * 80}px`,
           },
         };
       });
@@ -3484,7 +3467,7 @@ const API: React.FC = () => {
         );
       });
     }
-  }, [formPreviewData]);
+  }, [formPreviewData, authorizationStatus]);
 
   // Handle processes for media ids updates
   React.useEffect(() => {
@@ -3506,6 +3489,7 @@ const API: React.FC = () => {
       });
       setFormPreviewDisplay((previousPreviewDisplay) => {
         // Create react class element for passage preview
+        console.log({ formPreviewDataForPassages: formPreviewData });
         const textInputArea = React.createElement("textarea", {
           className: styles.passageContentText,
           value:
@@ -3526,7 +3510,7 @@ const API: React.FC = () => {
             setDataForForm((previousDataForForm) => {
               return {
                 ...previousDataForForm,
-                forId: mediaDataIds[`current`][`passage`],
+                forId: `forStorage-${mediaDataIds[`current`][`passage`]}`,
                 forInput: `content`,
                 inputValue: retrievedText,
               };
@@ -3550,6 +3534,23 @@ const API: React.FC = () => {
       className={styles.mainDisplaySupportClass}
       style={styles.mainDisplaySupportStyle}
     >
+      <div
+        className={styles[`headerBarForAPI`]}
+        style={styles[`headerBarForAPISupport`]}
+      >
+        <HeaderBar
+          authorizationStatusOpts={{
+            authorizationStatus,
+            setAuthorizationStatus,
+          }}
+        />
+      </div>
+      <div
+        className={styles.outterMediaPreviewDisplay}
+        style={styles.outterMediaPreviewDisplaySupport}
+      >
+        {formPreviewDisplay}
+      </div>
       <FormConfiguration
         styles={styles}
         customInitialFormValues={{
@@ -3557,6 +3558,68 @@ const API: React.FC = () => {
           setInitialFormValues: setInitialFormValues,
         }}
         ids={{ mediaDataIds, setMediaDataIds }}
+        formFacade={{
+          initialInputs: [{ name: `title`, inputType: `text` }],
+          mediaInputsNav: [
+            { mediaType: `video`, buttonText: `Vids` },
+            { mediaType: `galleryPhoto`, buttonText: `Gallery` },
+            { mediaType: `passage`, buttonText: `Passages` },
+          ],
+          mediaMiniFormInputs: [
+            {
+              mediaType: `video`,
+              addButtonText: `Add Video`,
+              inputsOpts: [
+                { key: `name`, typeOfInput: `textInput` },
+                { key: `url`, typeOfInput: `textInput` },
+                {
+                  key: `type`,
+                  typeOfInput: `listInput`,
+                  childrenElements: [`youtube`, `not listed`],
+                },
+              ],
+              inputsDeletionCallback: () => {
+                return { name: ``, url: ``, type: `` };
+              },
+            },
+            {
+              mediaType: `galleryPhoto`,
+              addButtonText: `Add Gallery Photo`,
+              inputsOpts: [
+                { key: `photo`, typeOfInput: `fileInput` },
+                { key: `title`, typeOfInput: `textInput` },
+                {
+                  key: `reference`,
+                  typeOfInput: `textInputWithSubIndex`,
+                },
+              ],
+              inputsDeletionCallback: () => {
+                return { title: ``, photo: `reset`, references: [``] };
+              },
+            },
+            {
+              mediaType: `passage`,
+              addButtonText: `Add Passage`,
+              inputsOpts: [
+                { key: `title`, typeOfInput: `textInput` },
+                { key: `whatIsIt`, typeOfInput: `textInput` },
+                { key: `content`, typeOfInput: `` },
+                {
+                  key: `reference`,
+                  typeOfInput: `textInputWithSubIndex`,
+                },
+              ],
+              inputsDeletionCallback: () => {
+                return {
+                  title: ``,
+                  whatIsIt: ``,
+                  content: ``,
+                  references: [``],
+                };
+              },
+            },
+          ],
+        }}
         formPreviewDataOpts={{ formPreviewData, setFormPreviewData }}
         customFormSchema={{
           validSchema: validSchema,
@@ -3565,12 +3628,6 @@ const API: React.FC = () => {
         storedRefs={storedRefs}
         dataForForm={dataForForm}
       />
-      <div
-        className={styles.outterMediaPreviewDisplay}
-        style={styles.outterMediaPreviewDisplaySupport}
-      >
-        {formPreviewDisplay}
-      </div>
     </div>
   );
 };

@@ -8,13 +8,21 @@ import { ConnectedRouter } from "connected-react-router";
 import Project from "../features/Interfaces/Desktop/Project/Project";
 import API from "../features/Interfaces/Desktop/API/API";
 
+require("dotenv").config();
+
 export const store = configureStore();
-
 export const isMobile = checkIfMobileBrowser();
-
-export const localUrl = ``;
-
-export const dataBaseUrl = ``;
+export const localUrl = isMobile
+  ? process.env.REACT_APP_MOBILE_LOCAL_URL
+  : process.env.REACT_APP_LOCAL_URL;
+export const dataBaseUrl = isMobile
+  ? process.env.REACT_APP_MOBILE_DATABASE_URL
+  : process.env.REACT_APP_DATABASE_URL;
+export const userBaseUrl = isMobile
+  ? process.env.REACT_APP_MOBILE_USERBASE_URL
+  : process.env.REACT_APP_USERBASE_URL;
+export const domain = process.env.REACT_APP_AUTH0_DOMAIN;
+export const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
 function checkIfMobileBrowser() {
   let check = false;
@@ -55,6 +63,7 @@ const RoutesComposed = () => {
 
   // Listening for Authorization of Session
   React.useEffect(() => {
+    console[`log`]({ domain, clientId, localUrl, dataBaseUrl, userBaseUrl });
     if (authorized) {
       console.log("Authorized");
     } else {

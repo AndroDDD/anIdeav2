@@ -1,3 +1,20 @@
+// Underlayer
+.underlayer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+// Styling for project header bar
+.headerBarForProject {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(231, 1, 200, 1);
+}
+
 // Project Page Display Support
 .projectPageDisplaySupportClass {
   background-color: rgba(231, 1, 200, 1);
@@ -8,7 +25,7 @@
 
 // React Player styles
 .reactPlayerViewClass {
-  transform: translateX(-300%);
+  transform: translateX(300%);
   z-index: -5;
 }
 // Gallery View Styles
